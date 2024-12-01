@@ -1,21 +1,21 @@
 import { drizzle } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 
-import { dayRuns, giftsRelations } from '@/db/schema/dayRuns';
+import { dayRuns, runsRelations } from '@/db/schema/dayRuns';
 import { users, usersRelations } from '@/db/schema/users';
 
 const client = createClient({
-	url: process.env.DATABASE_URL!,
-	authToken: process.env.AUTH_TOKEN
+	url: process.env.TURSO_DB_DATABASE_URL!,
+	authToken: process.env.TURSO_DB_AUTH_TOKEN
 });
 
 export const db = drizzle(client, {
 	schema: {
 		users,
-		gifts: dayRuns,
+		dayRuns,
 
 		// relations
 		usersRelations,
-		giftsRelations
+		runsRelations
 	}
 });

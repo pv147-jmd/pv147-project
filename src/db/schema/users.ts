@@ -9,5 +9,7 @@ export const users = sqliteTable('users', {
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-	gifts: many(dayRuns)
+	runs: many(dayRuns)
 }));
+
+export type User = typeof users.$inferSelect;

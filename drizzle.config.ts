@@ -4,8 +4,8 @@ export default {
 	schema: './src/db/schema',
 	dialect: 'turso',
 	dbCredentials: {
-		url: process.env.DATABASE_URL!,
-		authToken: process.env.AUTH_TOKEN
+		url: process.env.TURSO_DB_DATABASE_URL!,
+		authToken: process.env.TURSO_DB_AUTH_TOKEN
 	},
 	out: '.drizzle'
 } satisfies Config;

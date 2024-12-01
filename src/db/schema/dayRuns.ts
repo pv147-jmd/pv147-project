@@ -10,9 +10,11 @@ export const dayRuns = sqliteTable('dayRuns', {
 	userId: integer('user_id')
 });
 
-export const giftsRelations = relations(dayRuns, ({ one }) => ({
+export const runsRelations = relations(dayRuns, ({ one }) => ({
 	createdByUser: one(users, {
 		fields: [dayRuns.userId],
 		references: [users.id]
 	})
 }));
+
+export type DayRun = typeof dayRuns.$inferSelect;
