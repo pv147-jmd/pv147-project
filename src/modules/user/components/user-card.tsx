@@ -1,5 +1,4 @@
 import { LabeledItem } from '@/components/labeled-item';
-import { useGiftsQuery } from '@/modules/gift/hooks/api';
 import { db } from '@/db';
 import { type User } from '@/db/schema/users';
 
