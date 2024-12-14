@@ -5,7 +5,10 @@ import { dayRuns } from '@/db/schema/dayRuns';
 
 export const users = sqliteTable('users', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	name: text('name')
+	nickname: text('nickname'),
+	email: text('email').notNull().unique(),
+	password: text('password').notNull(),
+	createdAt: text('created_at').default('CURRENT_TIMESTAMP')
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
