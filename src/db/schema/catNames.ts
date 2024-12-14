@@ -3,18 +3,17 @@ import { relations } from 'drizzle-orm';
 
 import { users } from '@/db/schema/users';
 
-export const dayRuns = sqliteTable('dayRuns', {
+export const catNames = sqliteTable('catNames', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	count: integer('count'),
-	date: text('date'),
+	name: text('name').notNull(),
 	userId: integer('user_id')
 });
 
-export const runsRelations = relations(dayRuns, ({ one }) => ({
+export const catNamesRelations = relations(catNames, ({ one }) => ({
 	createdByUser: one(users, {
-		fields: [dayRuns.userId],
+		fields: [catNames.userId],
 		references: [users.id]
 	})
 }));
 
-export type DayRun = typeof dayRuns.$inferSelect;
+export type CatNames = typeof catNames.$inferSelect;
