@@ -3,7 +3,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Register() {
-  const [formData, setFormData] = useState({ email: "", password: "", name: "", confirmPassword: "" });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    name: "",
+    confirmPassword: "",
+  });
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -11,25 +16,41 @@ export default function Register() {
     e.preventDefault();
     setError("");
 
+    // console.log("Form data on submit:", formData);
+
+    // Check for empty fields
+    if (!formData.email || !formData.password || !formData.name) {
+      setError("All fields are required");
+      return;
+    }
+
     // Password comparison
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
-    const { confirmPassword, ...payload } = formData; 
+    // Remove confirmPassword from payload
+    const { confirmPassword, ...payload } = formData;
 
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (response.ok) {
-      router.push("/login"); 
-    } else {
-      const { message } = await response.json();
-      setError(message || "Something went wrong.");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Response error:", errorText);
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      router.push("/login");
+    } catch (error) {
+      console.error("Fetch error:", error.message || error);
+      setError("Something went wrong. Please try again.");
     }
   };
 
@@ -41,25 +62,37 @@ export default function Register() {
           className="p-2 mb-2 border rounded"
           type="text"
           placeholder="Name"
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          value={formData.name}
+          onChange={(e) =>
+            setFormData({ ...formData, name: e.target.value })
+          }
         />
         <input
           className="p-2 mb-2 border rounded"
           type="email"
           placeholder="Email"
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          value={formData.email}
+          onChange={(e) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
         />
         <input
           className="p-2 mb-2 border rounded"
           type="password"
           placeholder="Password"
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
         />
         <input
           className="p-2 mb-4 border rounded"
           type="password"
           placeholder="Confirm Password"
-          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+          value={formData.confirmPassword}
+          onChange={(e) =>
+            setFormData({ ...formData, confirmPassword: e.target.value })
+          }
         />
         {error && <p className="text-red-500 mb-2">{error}</p>}
         <button className="p-2 bg-blue-500 text-white rounded" type="submit">

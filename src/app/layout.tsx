@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 
 import { Providers } from '@/components/providers';
+import { UserProvider } from '@/context/UserContext';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400'] });
 
@@ -21,7 +22,11 @@ const RootLayout = ({
 			className={`flex min-h-screen flex-col bg-gray-200 ${poppins.className}`}
 		>
 			<main className="container py-10">
-				<Providers>{children}</Providers>
+				<Providers>
+					<UserProvider>
+						{children}
+					</UserProvider>
+				</Providers>
 			</main>
 		</body>
 	</html>
