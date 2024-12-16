@@ -5,9 +5,10 @@ import { catNames } from '@/db/schema/catNames';
 
 export const users = sqliteTable('users', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	nickname: text('nickname'),
+	nickname: text('nickname').unique(),
 	email: text('email').notNull().unique(),
-	password: text('password').notNull(),
+	password: text('password').notNull().unique(),
+	role: text('role').default('user'),
 	createdAt: text('created_at').default('CURRENT_TIMESTAMP')
 });
 

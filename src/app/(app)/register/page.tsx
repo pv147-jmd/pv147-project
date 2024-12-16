@@ -20,13 +20,13 @@ export default function Register() {
 
     // Check for empty fields
     if (!formData.email || !formData.password || !formData.name) {
-      setError("All fields are required");
+      setError("Všechna pole jsou povinná.");
       return;
     }
 
     // Password comparison
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Hesla se neshodují.");
       return;
     }
 
@@ -40,28 +40,22 @@ export default function Register() {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Response error:", errorText);
-        throw new Error(`Request failed: ${response.status}`);
-      }
-
       const data = await response.json();
-      router.push("/login");
+      router.push("/login?registered=true");
     } catch (error) {
       console.error("Fetch error:", error.message || error);
-      setError("Something went wrong. Please try again.");
+      setError("Něco se pokazilo. Zkuste to prosím znovu.");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
+    <div className="flex flex-col items-center justify-center min-h-min">
+      <h1 className="text-2xl font-bold mb-4">Registrace</h1>
       <form className="w-80 flex flex-col" onSubmit={handleSubmit}>
         <input
           className="p-2 mb-2 border rounded"
           type="text"
-          placeholder="Name"
+          placeholder="Uživatelské jméno"
           value={formData.name}
           onChange={(e) =>
             setFormData({ ...formData, name: e.target.value })
@@ -79,7 +73,7 @@ export default function Register() {
         <input
           className="p-2 mb-2 border rounded"
           type="password"
-          placeholder="Password"
+          placeholder="Heslo"
           value={formData.password}
           onChange={(e) =>
             setFormData({ ...formData, password: e.target.value })
@@ -88,7 +82,7 @@ export default function Register() {
         <input
           className="p-2 mb-4 border rounded"
           type="password"
-          placeholder="Confirm Password"
+          placeholder="Potvrďte heslo"
           value={formData.confirmPassword}
           onChange={(e) =>
             setFormData({ ...formData, confirmPassword: e.target.value })
@@ -96,7 +90,7 @@ export default function Register() {
         />
         {error && <p className="text-red-500 mb-2">{error}</p>}
         <button className="p-2 bg-blue-500 text-white rounded" type="submit">
-          Register
+          Registrovat
         </button>
       </form>
     </div>

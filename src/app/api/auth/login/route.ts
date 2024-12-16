@@ -20,9 +20,9 @@ export async function POST(request: Request) {
         const user = await db.select().from(users).where(eq(users.email, email)).get();
 
         if (!user) {
-            console.error(`No user found with email: ${email}`);
+            // console.error(`No user found with email: ${email}`);
             return NextResponse.json(
-                { message: "Invalid email or password" },
+                { message: "Neplatný e-mail nebo heslo." },
                 { status: 401 }
             );
         }
@@ -30,24 +30,24 @@ export async function POST(request: Request) {
         // Compare password
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            console.error("Password mismatch for email:", email);
+            // console.error("Password mismatch for email:", email);
             return NextResponse.json(
-                { message: "Invalid email or password" },
+                { message: "Neplatný e-mail nebo heslo." },
                 { status: 401 }
             );
         }
 
-        console.log("Login successful for email:", email);
+        // console.log("Login successful for email:", email);
         return NextResponse.json(
-            { message: "Login successful", user },
+            { message: "Přihlášení proběhlo úspěšně.", user },
             { status: 200 }
         );
 
     } catch (error) {
         // Log full error for debugging
-        console.error("Error during login:", error);
+        // console.error("Error during login:", error);
         return NextResponse.json(
-            { message: "An unexpected error occurred", error: error.message },
+            { message: "Došlo k neočekávané chybě", error: error.message },
             { status: 500 }
         );
     }

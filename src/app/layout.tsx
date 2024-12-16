@@ -22,14 +22,15 @@ const RootLayout = ({
 		<body
 			className={`flex min-h-screen flex-col bg-gray-200 ${poppins.className}`}
 		>
+			<UserProvider>
 			<Navbar />
 			<main className="container py-10">
 				<Providers>
-					<UserProvider>
+					
 						{children}
-					</UserProvider>
 				</Providers>
 			</main>
+			</UserProvider>
 		</body>
 	</html>
 );
