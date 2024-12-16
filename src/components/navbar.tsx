@@ -3,8 +3,9 @@ import Link from 'next/link';
 export const Navbar = () => (
 	<header className="bg-white shadow">
 	<div className="container mx-auto flex items-center justify-between py-4 px-6">
-		<Link href="/" className="text-xl font-bold text-gray-800">
-		🐾 Generátor kočičích jmen
+		<Link href="/" className="flex items-center text-xl font-bold text-gray-800">
+			<img src="/favicon.ico" alt="Icon" className="w-10 h-10 mr-2" />
+			Generátor kočičích jmen
 		</Link>
 
 		<nav className="flex items-center gap-x-6">
