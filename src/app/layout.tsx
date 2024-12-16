@@ -5,11 +5,12 @@ import { Poppins } from 'next/font/google';
 
 import { Providers } from '@/components/providers';
 import { UserProvider } from '@/context/UserContext';
+import { Navbar } from '@/components/navbar';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400'] });
 
 export const metadata: Metadata = {
-	title: 'Task 06'
+	title: 'Generátor kočičích jmen'
 };
 
 const RootLayout = ({
@@ -21,6 +22,7 @@ const RootLayout = ({
 		<body
 			className={`flex min-h-screen flex-col bg-gray-200 ${poppins.className}`}
 		>
+			<Navbar />
 			<main className="container py-10">
 				<Providers>
 					<UserProvider>
