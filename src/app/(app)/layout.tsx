@@ -6,7 +6,7 @@ const Layout = ({ children }: PropsWithChildren) => (
 	<>
 		{/* <div className="mb-10 flex">
 			<PageLink reverse href="/">
-				Back home
+				Zpět na hlavní stránku
 			</PageLink>
 		</div> */}
 
