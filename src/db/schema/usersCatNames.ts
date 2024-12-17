@@ -5,8 +5,14 @@ import { catNames } from '@/db/schema/catNames';
 import { users } from '@/db/schema/users';
 
 export const usersCatNames = sqliteTable('usersCatNames', {
-	userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
-	catNameId: integer('cat_name_id').references(() => catNames.id, { onDelete: 'cascade' }).notNull()
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	userId: integer('user_id')
+		.references(() => users.id, { onDelete: 'cascade' })
+		.notNull(),
+	catNameId: integer('cat_name_id')
+		.references(() => catNames.id, { onDelete: 'cascade' })
+		.notNull(),
+	pictureUrl: text('picture_url') // Add this line to store the picture URL
 });
 
 export const usersCatNamesRelations = relations(usersCatNames, ({ one }) => ({
