@@ -1,10 +1,13 @@
 import { db } from '@/db';
+import { EditMyCat } from '@/app/(app)/my-names/[slug]/EditMyCat';
 
-const GeneratePage = async () => {
-	const catNames = await db.query.catNames.findMany();
+const MyCatNames = async () => {
+	const ownedCats = await db.query.usersCatNames.findMany({
+		where: (usersCatNames, { eq }) => eq(usersCatNames.userId, 1)
+	});
 	return (
 		<>
-			<h1 className="text-3xl">Generování kočičích jmen</h1>
+			<h1 className="text-3xl">Moje kočičky</h1>
 
 			<div className="mt-10">
 				<table className="min-w-full border-collapse border border-gray-300 bg-white shadow-sm">
@@ -17,14 +20,14 @@ const GeneratePage = async () => {
 						</tr>
 					</thead>
 					<tbody>
-						{catNames.length > 0 ? (
-							catNames.map((catName, index) => (
-								<tr key={catName.id} className="hover:bg-gray-50">
+						{ownedCats.length > 0 ? (
+							ownedCats.map((catName, index) => (
+								<tr key={catName.catNameId} className="hover:bg-gray-50">
 									<td className="border border-gray-300 px-4 py-2">
 										{index + 1}
 									</td>
 									<td className="border border-gray-300 px-4 py-2">
-										{catName.name}
+										jméno kočky
 									</td>
 								</tr>
 							))
@@ -34,15 +37,16 @@ const GeneratePage = async () => {
 									colSpan={3}
 									className="border border-gray-300 px-4 py-2 text-center text-gray-500"
 								>
-									Žádná jména nejsou k dispozici.
+									Nemáte přiřazená žádná jména koček.
 								</td>
 							</tr>
 						)}
 					</tbody>
 				</table>
 			</div>
+			<EditMyCat catNameId={1} />
 		</>
 	);
 };
 
-export default GeneratePage;
+export default MyCatNames;
