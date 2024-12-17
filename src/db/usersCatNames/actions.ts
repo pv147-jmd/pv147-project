@@ -2,6 +2,7 @@
 
 import { db } from '@/db';
 import { usersCatNames } from '../schema/usersCatNames';
+import { eq } from "drizzle-orm";
 
 export async function assignCatNameToUser(userId: number, catNameId: number) {
 	try {
@@ -12,4 +13,13 @@ export async function assignCatNameToUser(userId: number, catNameId: number) {
 		console.error('Chyba při přiřazování jména:', error);
 		throw new Error('Nepodařilo se přiřadit kočičí jméno.');
 	}
+}
+
+export async function getAssignedCatNames(userId: number) {
+	const userNames = await db
+		.select({ nameId: usersCatNames.catNameId })
+		.from(usersCatNames)
+		.where(eq(usersCatNames.userId, userId));
+	
+	return userNames.map(entry => entry.nameId);
 }

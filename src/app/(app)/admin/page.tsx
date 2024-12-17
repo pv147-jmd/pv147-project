@@ -16,7 +16,6 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 const AdminPage = () => {
-	// TODO verify admin
 	const [isUploading, setIsUploading] = useState<boolean>(false);
 
 	const form = useForm<FormSchema>({

@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { TableCatNames } from "@/components/table-cat-names";
-import { addCatName, getAllCatNames, getRandomCatNames, searchCatNames } from "@/db/catNames/actions";
+import { addCatName, getAllCatNames, getRandomCatNames, getRandomCatNamesWithoutUsers, searchCatNames } from "@/db/catNames/actions";
 import { assignCatNameToUser } from "@/db/usersCatNames/actions";
+import { useUser } from "@/context/UserContext";
+import { useSession } from "next-auth/react";
 
 type CatName = {
 	id: number;
@@ -16,24 +18,34 @@ const GeneratePage = () => {
 	const [showAllNames, setShowAllNames] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [newCatName, setNewCatName] = useState("");
+	
+	const { user } = useUser();
+	const { data: session } = useSession();
 
 	useEffect(() => {
 		const fetchInitialData = async () => {
-			const initialCatNames = await getAllCatNames();
+			const initialCatNames = await getRandomCatNames();
 			setCatNames(initialCatNames);
 		};
 		fetchInitialData();
 	}, []);
 
 	const handleRandomNames = async () => {
-		const randomNames = await getRandomCatNames();
-		setCatNames(randomNames);
+		const randomNames = await getRandomCatNamesWithoutUsers(user == undefined ? 0 : user?.id);
+		const updatedNames = randomNames.map((name) => ({
+			...name,
+			userId: null,
+		}));
+
+		setCatNames(updatedNames);
+		setSearchTerm("");
 		setShowAllNames(false);
 	};
 
 	const handleAllNames = async () => {
 		const allNames = await getAllCatNames();
 		setCatNames(allNames);
+		setSearchTerm("");
 		setShowAllNames(true);
 	};
 
@@ -44,14 +56,14 @@ const GeneratePage = () => {
 
 	const handleSaveNewCatName = async () => {
 		if (!newCatName.trim()) return alert("Zadejte platné jméno.");
-		await addCatName(newCatName, 1); // TODO opravit a brat id usera z kontextu
+		await addCatName(newCatName, (user == undefined ? 0 : user?.id));
 		setNewCatName("");
 		alert("Jméno bylo úspěšně uloženo!");
 	};
 
 	const handleAddToMyNames = async () => {
 		const nameId = await addCatName(newCatName, 1);
-		await assignCatNameToUser(1, nameId); // TODO opravit a brat id usera z kontextu
+		await assignCatNameToUser((user == undefined ? 0 : user?.id), nameId);
 		alert("Jméno bylo uloženo a přidáno do vašich jmen!");
 	};
 
@@ -86,14 +98,14 @@ const GeneratePage = () => {
 							const value = e.target.value;
 							setSearchTerm(value);
 							await handleSearch(value);
-							setNewCatName(value); // Nastavit pro možnost uložení nového jména
+							setNewCatName(value);
 						}}
 						placeholder="Vyhledat jméno"
 						className="mr-2 rounded border border-gray-300 px-4 py-2"
 					/>
 				</div>
 
-				{catNames.length === 0 && searchTerm.trim() && (
+				{(user || session?.user) && (searchTerm.trim() && (catNames.length === 0 || !catNames.find((cat) => cat.name.toLowerCase() === searchTerm.trim().toLowerCase()))) && (
 					<div className="flex gap-2">
 						<button
 							onClick={handleSaveNewCatName}
@@ -102,7 +114,7 @@ const GeneratePage = () => {
 							Uložit nové jméno
 						</button>
 						<button
-							onClick={() => handleAddToMyNames} // Simuluje přidání do mých jmen
+							onClick={() => handleAddToMyNames}
 							className="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600"
 						>
 							Uložit nové a přidat do mých jmen
@@ -113,10 +125,10 @@ const GeneratePage = () => {
 		)}
 
 		<div className="mt-10">
-			<TableCatNames catNames={catNames} userId={1} />
+			<TableCatNames catNames={catNames} userId={user == undefined ? 0 : user?.id} />
 		</div>
 	</>
-	);							//TODO TADY OPRAVIT PRIRAZENI USERID Z KONTEXTU
+	);
 };
 
 export default GeneratePage;
