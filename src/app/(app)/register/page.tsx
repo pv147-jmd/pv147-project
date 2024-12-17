@@ -6,7 +6,7 @@ export default function Register() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "",
+    nickname: "",
     confirmPassword: "",
   });
   const [error, setError] = useState("");
@@ -19,7 +19,7 @@ export default function Register() {
     // console.log("Form data on submit:", formData);
 
     // Check for empty fields
-    if (!formData.email || !formData.password || !formData.name) {
+    if (!formData.email || !formData.password || !formData.nickname) {
       setError("Všechna pole jsou povinná.");
       return;
     }
@@ -56,9 +56,9 @@ export default function Register() {
           className="p-2 mb-2 border rounded"
           type="text"
           placeholder="Uživatelské jméno"
-          value={formData.name}
+          value={formData.nickname}
           onChange={(e) =>
-            setFormData({ ...formData, name: e.target.value })
+            setFormData({ ...formData, nickname: e.target.value })
           }
         />
         <input

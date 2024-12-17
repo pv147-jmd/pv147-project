@@ -5,9 +5,9 @@ import bcrypt from "bcrypt";
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name } = await request.json();
+    const { email, password, nickname } = await request.json();
 
-    if (!email || !password || !name) {
+    if (!email || !password || !nickname) {
       return NextResponse.json(
         { message: "All fields are required" },
         { status: 400 }
@@ -17,9 +17,9 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await db.insert(users).values({
+      nickname,
       email,
       password: hashedPassword,
-      name,
     });
 
     return NextResponse.json(
