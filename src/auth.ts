@@ -1,9 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, { Account, Session, User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { db } from "@/db";
 import { users } from "@/db/schema/users"; 
 import { eq } from 'drizzle-orm';
 import { debug } from "console";
+import { JWT } from "next-auth/jwt";
 
 export const authOptions = {
   providers: [
@@ -22,28 +23,32 @@ export const authOptions = {
   ],
   debug: true,  
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token.user) {
 
-        session.user = token.user;
+        session.user = token.user as User;
       }
       return session;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account }: {
+      token: JWT;
+      user?: User; // user can be undefined on subsequent calls
+      account?: Account | null; // account is also optional during the session callback
+  }) {
       if (user) {
         token.user = user; 
       }
 
       if (account?.provider === "google") {
         
-        const existingUser = await db.select().from(users).where(eq(users.email, user.email)).get();
+        const existingUser = await db.select().from(users).where(eq(users.email, (user?.email || ""))).get();
 
         if (!existingUser) {
           
           await db.insert(users).values({
-            email: user?.email,
-            nickname: user?.name,
-            password: user?.password || ""
+            email: user?.email || "",
+            nickname: user?.name || "",
+            password: ""
           });
         }
 

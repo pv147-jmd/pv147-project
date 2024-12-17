@@ -42,7 +42,7 @@ export default function Register() {
 
       const data = await response.json();
       router.push("/login?registered=true");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Fetch error:", error.message || error);
       setError("Něco se pokazilo. Zkuste to prosím znovu.");
     }

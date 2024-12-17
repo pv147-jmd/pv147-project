@@ -1,9 +1,12 @@
 "use client";
-import { useSession } from 'next-auth/react';
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useSession } from "next-auth/react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { db } from "@/db"; 
+import { users } from "@/db/schema/users"; 
+import { eq } from "drizzle-orm";
 
 type User = {
-  id: string;
+  id: number;
   email: string;
 } | null;
 
@@ -16,22 +19,46 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const { data: session, status } = useSession();
-  const [user, setUser] = useState( session?.user || null);
+  const { data: session } = useSession();
+  const [user, setUser] = useState<User>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const fetchUser = async () => {
+      if (session?.user?.email) {
+        try {
+          // Fetch the user from the database using the session email
+          const dbUser = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, session.user.email))
+            .then((result) => result[0]); // Retrieve the first matching user
+
+          if (dbUser) {
+            const appUser: User = {
+              id: dbUser.id,
+              email: dbUser.email,
+            };
+
+            setUser(appUser); // Update the context
+            localStorage.setItem("user", JSON.stringify(appUser)); // Persist user in localStorage
+          }
+        } catch (error) {
+          console.error("Error fetching user from database:", error);
+        }
+      }
+    };
+
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    else if (session?.user) {
-      setUser(session.user); 
+      setUser(JSON.parse(storedUser)); // Load user from localStorage
+    } else {
+      fetchUser(); // Fetch user from the database
     }
   }, [session]);
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
   };
 
   return (
@@ -44,7 +71,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
+    throw new Error("useUser must be used within a UserProvider");
   }
   return context;
 };
