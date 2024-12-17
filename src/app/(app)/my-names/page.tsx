@@ -1,10 +1,11 @@
+import Image from 'next/image';
+
 import { db } from '@/db';
 import { EditMyCat } from '@/app/(app)/my-names/[slug]/EditMyCat';
+import { getUsersCatNames } from '@/db/queries/usersCatNamesQueries';
 
 const MyCatNames = async () => {
-	const ownedCats = await db.query.usersCatNames.findMany({
-		where: (usersCatNames, { eq }) => eq(usersCatNames.userId, 1)
-	});
+	const ownedCats = await getUsersCatNames(1);
 	return (
 		<>
 			<h1 className="text-3xl">Moje kočičky</h1>
@@ -28,6 +29,19 @@ const MyCatNames = async () => {
 									</td>
 									<td className="border border-gray-300 px-4 py-2">
 										jméno kočky
+									</td>
+									<td className="border border-gray-300 px-4 py-2">
+										{catName.pictureUrl ? (
+											<Image
+												src={catName.pictureUrl}
+												alt="Cat"
+												className="h-16 w-16 object-cover"
+												width={64}
+												height={64}
+											/>
+										) : (
+											'No picture'
+										)}
 									</td>
 								</tr>
 							))

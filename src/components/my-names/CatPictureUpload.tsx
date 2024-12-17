@@ -3,6 +3,8 @@
 import type { PutBlobResult } from '@vercel/blob';
 import { useState, useRef } from 'react';
 
+import { addPictureToUsersCat } from '@/db/queries/usersCatNamesQueries';
+
 export const CatPictureUpload = () => {
 	const inputFileRef = useRef<HTMLInputElement>(null);
 	const [blob, setBlob] = useState<PutBlobResult | null>(null);
@@ -21,7 +23,7 @@ export const CatPictureUpload = () => {
 					const file = inputFileRef.current.files[0];
 
 					const response = await fetch(
-						`/api/avatar/upload?filename=${file.name}`,
+						`/api/usersCatNames/upload?filename=${file.name}`,
 						{
 							method: 'POST',
 							body: file
@@ -31,6 +33,7 @@ export const CatPictureUpload = () => {
 					const newBlob = (await response.json()) as PutBlobResult;
 
 					setBlob(newBlob);
+					await addPictureToUsersCat(1, 1, newBlob.url);
 				}}
 			>
 				<input name="file" ref={inputFileRef} type="file" required />

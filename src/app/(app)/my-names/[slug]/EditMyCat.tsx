@@ -16,16 +16,18 @@ export const EditMyCat = async ({ catNameId }: { catNameId: number }) => {
 	}
 
 	return (
-		<Modal
-			isOpen
-			onClose={() => {
-				/* TODO return back */
-			}}
-		>
+		// <Modal
+		// 	isOpen
+		// 	onClose={() => {
+		// 		/* TODO return back */
+		// 	}}
+		// >
+		<>
 			<h1>Edit Cat</h1>
 			<div>name: {cat.catNameId}</div>
 			<CatPictureUpload />
-		</Modal>
+		</>
+		// </Modal>
 	);
 };
 
