@@ -51,7 +51,7 @@ export default function Login() {
               const { message } = data;
               setError(message || "Neplatný e-mail nebo heslo.");
           }
-      } catch (error) {
+      } catch (error: any) {
           console.error("Fetch error:", error.message || error);
           setError( error.message || "Při přihlašování došlo k chybě. Zkuste to prosím znovu.");
       }
