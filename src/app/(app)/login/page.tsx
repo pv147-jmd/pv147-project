@@ -13,7 +13,7 @@ export default function Login() {
   const { setUser } = useUser();
 
   const handleGoogleLogin = async () => {
-    await signIn("google");
+    await signIn("google", { redirectTo: "/"});
   };
 
   useEffect(() => {
@@ -30,9 +30,7 @@ export default function Login() {
           setError("E-mail a heslo jsou povinné.");
           return;
       }
-
-      // Send the payload with correct field names
-      // const payload = { email: formData.email, password: formData.password };
+      
       const { ...payload } = formData;
 
       try {

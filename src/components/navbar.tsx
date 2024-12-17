@@ -2,15 +2,21 @@
 import Link from 'next/link';
 import { useUser } from "@/context/UserContext";
 import { useRouter } from 'next/navigation';
+import { signOut, useSession } from "next-auth/react";
 
 export const Navbar = () => {
 	const { user, logout } = useUser();
 	const router = useRouter();
+	const { data: session } = useSession();
 
-	const handleLogout = () => {
-		logout();
-		router.push("/"); 
-	  };
+	const handleLogout = async () => {
+		if (session?.user) {
+		  await signOut({ redirect: true });
+		} else if (user) {
+		  logout();
+		}
+		router.push('/');
+	};
 
 	return (
 	<header className="bg-white shadow">
@@ -26,7 +32,7 @@ export const Navbar = () => {
 		>
 			Generování jmen
 		</Link>
-		{ user && 
+		{ (user || session?.user) && 
 		<Link
 			href="/my-names"
 			className="text-gray-600 hover:text-gray-800 transition"
@@ -35,7 +41,7 @@ export const Navbar = () => {
 		</Link>}
 		</nav>
 
-		{ !user && 
+		{ (!user && !session?.user) && 
 		<div className="flex items-center gap-x-4">
 		<nav className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition">
 			<Link
@@ -53,10 +59,10 @@ export const Navbar = () => {
 		</nav>
 		</div>}
 
-		{user && (
+		{(user || session?.user) && (
 			<div className="flex items-center gap-x-4">
 				<p className="text-sm text-gray-800 font-medium">
-				Přihlášen jako: <span className="font-semibold">{user.email}</span>
+				Přihlášen jako: {user && <span className="font-semibold">{user.email}</span>}
 				</p>
 				<button
 				onClick={handleLogout}
@@ -66,6 +72,8 @@ export const Navbar = () => {
 				</button>
 			</div>
 		)}
+
+		
 	</div>
 	</header>
 	);

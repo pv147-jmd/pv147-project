@@ -6,6 +6,7 @@ import { Poppins } from 'next/font/google';
 import { Providers } from '@/components/providers';
 import { UserProvider } from '@/context/UserContext';
 import { Navbar } from '@/components/navbar';
+import SessionWrapper from '@/components/sessionWrapper';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400'] });
 
@@ -22,6 +23,7 @@ const RootLayout = ({
 		<body
 			className={`flex min-h-screen flex-col bg-gray-200 ${poppins.className}`}
 		>
+			<SessionWrapper>
 			<UserProvider>
 			<Navbar />
 			<main className="container py-10">
@@ -31,6 +33,7 @@ const RootLayout = ({
 				</Providers>
 			</main>
 			</UserProvider>
+			</SessionWrapper>
 		</body>
 	</html>
 );

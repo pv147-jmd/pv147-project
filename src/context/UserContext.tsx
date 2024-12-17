@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from 'next-auth/react';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type User = {
@@ -15,14 +16,18 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>(null);
+  const { data: session, status } = useSession();
+  const [user, setUser] = useState( session?.user || null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-  }, []);
+    else if (session?.user) {
+      setUser(session.user); 
+    }
+  }, [session]);
 
   const logout = () => {
     setUser(null);

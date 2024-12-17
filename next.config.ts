@@ -1,7 +1,10 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-	/* config options here */
+	experimental: {
+		turbo: false, // Disable Turbopack and revert to Webpack
+	  },
+	productionBrowserSourceMaps: true
 };
 
 export default nextConfig;
