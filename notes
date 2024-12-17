@@ -1,0 +1,9 @@
+db.query,users,findFirst({where: (users, {eq}) => eq(users.isLoggedIn,1)
+    tady se vytahuje z callbacku, ale muze byt i import
+
+
+queries si davat do db
+
+server actions do components/{component}/action.ts
+
+Příklady Metadat: opengraph.xyz
