@@ -34,12 +34,15 @@ const AdminPage = () => {
 		}
 	};
 	return (
-		<form onSubmit={form.handleSubmit(onSubmit)}>
+		<form
+			onSubmit={form.handleSubmit(onSubmit)}
+			className="flex h-screen w-1/2 flex-col"
+		>
 			<textarea
-				className="p-2"
+				className="mb-3 flex p-2"
 				{...form.register('name')}
 				placeholder="Enter names, one per line"
-				rows={10}
+				rows={30}
 				cols={50}
 			/>
 			<SubmitButton isLoading={isUploading} />
