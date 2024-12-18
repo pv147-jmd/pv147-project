@@ -1,12 +1,9 @@
 'use client';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 
-import { db } from '@/db';
-import { EditMyCat } from '@/app/(app)/my-names/[slug]/EditMyCat';
 import { getUsersCatNames } from '@/db/queries/usersCatNamesQueries';
 import { useUser } from '@/context/UserContext';
 import { type UsersCatNames } from '@/db/schema/usersCatNames';
@@ -17,6 +14,7 @@ const MyCatNames = () => {
 	const [ownedCats, setOwnedCats] = useState<
 		(UsersCatNames & { catName: string })[]
 	>([]);
+	const [loading, setLoading] = useState(true);
 	const { data: session } = useSession();
 	const router = useRouter();
 
@@ -33,19 +31,17 @@ const MyCatNames = () => {
 				})
 			);
 			setOwnedCats(catsWithNames);
+			setLoading(false);
 		};
 		if (user?.id) {
-			fetchOwnedCats(user?.id);
+			fetchOwnedCats(user.id);
 		}
 	}, [user?.id]);
 
-	// const currentUser = user ? user : null;
-	// if (!currentUser) {
-	// 	redirect('/login');
-	// }
-	// if (!currentUser.id) {
-	// 	return <div>Not working</div>;
-	// }
+	if (loading) {
+		return <div>Loading...</div>;
+	}
+
 	return (
 		<>
 			<h1 className="text-center text-3xl">Moje kočičky</h1>
@@ -53,7 +49,7 @@ const MyCatNames = () => {
 			<div className="md: mt-10 grid grid-cols-1 grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-5">
 				{ownedCats.length > 0 ? (
 					ownedCats.map(ownedCat => (
-						// eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+						// eslint-disable-next-line jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events
 						<div
 							key={ownedCat.id}
 							className="cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-md hover:shadow-lg"
