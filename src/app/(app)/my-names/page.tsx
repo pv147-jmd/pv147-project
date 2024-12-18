@@ -34,7 +34,9 @@ const MyCatNames = () => {
 			);
 			setOwnedCats(catsWithNames);
 		};
-		fetchOwnedCats(user?.id);
+		if (user?.id) {
+			fetchOwnedCats(user?.id);
+		}
 	}, [user?.id]);
 
 	// const currentUser = user ? user : null;
