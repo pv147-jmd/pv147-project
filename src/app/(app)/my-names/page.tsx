@@ -1,11 +1,18 @@
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
-import { db } from '@/db';
 import { EditMyCat } from '@/app/(app)/my-names/[slug]/EditMyCat';
 import { getUsersCatNames } from '@/db/queries/usersCatNamesQueries';
+import { auth } from '@/auth/auth';
 
 const MyCatNames = async () => {
-	const ownedCats = await getUsersCatNames(1);
+	const session = await auth();
+
+	if (!session?.user?.id) {
+		redirect('/login');
+	}
+
+	const ownedCats = await getUsersCatNames(session.user.id);
 	return (
 		<>
 			<h1 className="text-3xl">Moje kočičky</h1>

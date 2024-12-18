@@ -24,15 +24,12 @@ const RootLayout = ({
 			className={`flex min-h-screen flex-col bg-gray-200 ${poppins.className}`}
 		>
 			<SessionWrapper>
-			<UserProvider>
-			<Navbar />
-			<main className="container py-10">
-				<Providers>
-					
-						{children}
-				</Providers>
-			</main>
-			</UserProvider>
+				{/*<UserProvider>*/}
+				<Navbar />
+				<main className="container py-10">
+					<Providers>{children}</Providers>
+				</main>
+				{/*</UserProvider>*/}
 			</SessionWrapper>
 		</body>
 	</html>
