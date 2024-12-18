@@ -19,7 +19,7 @@ export const addPictureToUsersCat = async (
 	userCatNameId: number,
 	picture: string
 ) =>
-	db
+	await db
 		.update(usersCatNames)
 		.set({ pictureUrl: picture })
 		.where(eq(usersCatNames.id, userCatNameId));

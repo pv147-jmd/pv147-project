@@ -1,6 +1,5 @@
 'use client';
 
-import type { PutBlobResult } from '@vercel/blob';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -12,7 +11,6 @@ export const CatPictureUpload = ({
 	userCatNameId: number;
 }) => {
 	const inputFileRef = useRef<HTMLInputElement>(null);
-	// const [blob, setBlob] = useState<PutBlobResult | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 
@@ -38,10 +36,9 @@ export const CatPictureUpload = ({
 						}
 					);
 
-					const newBlob = (await response.json()) as PutBlobResult;
+					const newBlob = await response.json();
 
-					// setBlob(newBlob);
-					await addPictureToUsersCat(userCatNameId, newBlob.url);
+					addPictureToUsersCat(userCatNameId, newBlob.url);
 					setIsLoading(false);
 					router.refresh();
 				}}
