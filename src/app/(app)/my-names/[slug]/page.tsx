@@ -19,6 +19,15 @@ const Page = async ({
 	if (!catName) {
 		return <div>Name not found</div>;
 	}
-	return <EditMyCat userCatName={userCatName} name={catName.name} />;
+	return (
+		<EditMyCat
+			userCatName={{
+				id: userCatName.id,
+				userId: userCatName.userId,
+				pictureUrl: userCatName.pictureUrl ? userCatName.pictureUrl : ''
+			}}
+			name={catName.name}
+		/>
+	);
 };
 export default Page;
