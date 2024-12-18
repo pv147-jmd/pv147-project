@@ -40,7 +40,7 @@ export const CatPictureUpload = ({
 
 					addPictureToUsersCat(userCatNameId, newBlob.url);
 					setIsLoading(false);
-					router.refresh();
+					router.replace('/my-names');
 				}}
 			>
 				<input

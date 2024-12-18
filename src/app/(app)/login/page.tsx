@@ -47,7 +47,7 @@ const Login = () => {
 			if (response.ok) {
 				setUser(data.user);
 				localStorage.setItem('user', JSON.stringify(data.user));
-				router.push('/');
+				router.replace('/');
 			} else {
 				const { message } = data;
 				setError(message || 'Neplatný e-mail nebo heslo.');
