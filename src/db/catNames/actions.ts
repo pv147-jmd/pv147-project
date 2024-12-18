@@ -1,52 +1,54 @@
-"use server";
+'use server';
 
-import { db } from "@/db";
-import { sql, like, eq, notInArray } from "drizzle-orm";
-import { catNames } from "../schema/catNames";
-import { usersCatNames } from "../schema/usersCatNames";
+import { sql, like, eq, notInArray } from 'drizzle-orm';
 
-export async function getAllCatNames() {
-	return await db.query.catNames.findMany();
-}
+import { db } from '@/db';
 
-export async function getRandomCatNames() {
-	return await db.query.catNames.findMany({
-	limit: 10,
-	orderBy: sql`RANDOM()`
+import { catNames } from '../schema/catNames';
+import { usersCatNames } from '../schema/usersCatNames';
+
+export const getAllCatNames = async () => await db.query.catNames.findMany();
+
+export const getRandomCatNames = async () =>
+	db.query.catNames.findMany({
+		limit: 10,
+		orderBy: sql`RANDOM()`
 	});
-}
 
-export async function getRandomCatNamesWithoutUsers(userId: number) {
+export const getRandomCatNamesWithoutUsers = async (userId: number) => {
 	const userNames = await db
 		.select({ nameId: usersCatNames.catNameId })
 		.from(usersCatNames)
 		.where(eq(usersCatNames.userId, userId));
 
-	const userNameIds = userNames.map((entry) => entry.nameId);
+	const userNameIds = userNames.map(entry => entry.nameId);
 
 	return await db.query.catNames.findMany({
 		limit: 10,
 		orderBy: sql`RANDOM()`,
-		where: notInArray(catNames.id, userNameIds),
-		});
+		where: notInArray(catNames.id, userNameIds)
+	});
 };
 
-export async function searchCatNames(searchTerm: string) {
+export const searchCatNames = async (searchTerm: string) => {
 	if (!searchTerm) return getAllCatNames();
 	return await db.query.catNames.findMany({
-	where: (fields) => like(fields.name, `${searchTerm}%`),
+		where: fields => like(fields.name, `${searchTerm}%`)
 	});
-}
+};
 
-export async function addCatName(name: string, userId: number) {
-	const [insertedId] = await db.insert(catNames).values({
-		name,
-		userId,
-	}).returning({ id: catNames.id });
+export const addCatName = async (name: string, userId: number) => {
+	const [insertedId] = await db
+		.insert(catNames)
+		.values({
+			name,
+			userId
+		})
+		.returning({ id: catNames.id });
 
 	if (!insertedId) {
-		throw new Error("Nepodařilo se vložit nové jméno.");
+		throw new Error('Nepodařilo se vložit nové jméno.');
 	}
 
 	return insertedId.id;
-}
+};
