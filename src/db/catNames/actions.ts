@@ -52,3 +52,8 @@ export const addCatName = async (name: string, userId: number) => {
 
 	return insertedId.id;
 };
+
+export const getCatNameById = async (id: number) =>
+	await db.query.catNames.findFirst({
+		where: eq(catNames.id, id)
+	});

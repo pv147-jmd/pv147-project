@@ -1,11 +1,34 @@
+'use client';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 import { db } from '@/db';
 import { EditMyCat } from '@/app/(app)/my-names/[slug]/EditMyCat';
 import { getUsersCatNames } from '@/db/queries/usersCatNamesQueries';
+import { useUser } from '@/context/UserContext';
+import { type UsersCatNames } from '@/db/schema/usersCatNames';
 
-const MyCatNames = async () => {
-	const ownedCats = await getUsersCatNames(1);
+const MyCatNames = () => {
+	const { user } = useUser();
+	const [ownedCats, setOwnedCats] = useState<UsersCatNames[]>([]);
+	const { data: session } = useSession();
+
+	const currentUser = user ? user : session?.user ? session.user : null;
+	if (!currentUser) {
+		redirect('/login');
+	}
+
+	useEffect(() => {
+		const fetchOwnedCats = async (userId: number) => {
+			const ownedCats = await getUsersCatNames(userId);
+			setOwnedCats(ownedCats);
+		};
+		fetchOwnedCats(Number(currentUser.id));
+	}, [currentUser.id]);
+
 	return (
 		<>
 			<h1 className="text-3xl">Moje kočičky</h1>
@@ -22,8 +45,8 @@ const MyCatNames = async () => {
 					</thead>
 					<tbody>
 						{ownedCats.length > 0 ? (
-							ownedCats.map((catName, index) => (
-								<tr key={catName.catNameId} className="hover:bg-gray-50">
+							ownedCats.map((ownedCat, index) => (
+								<tr key={ownedCat.id} className="hover:bg-gray-50">
 									<td className="border border-gray-300 px-4 py-2">
 										{index + 1}
 									</td>
@@ -31,9 +54,9 @@ const MyCatNames = async () => {
 										jméno kočky
 									</td>
 									<td className="border border-gray-300 px-4 py-2">
-										{catName.pictureUrl ? (
+										{ownedCat.pictureUrl ? (
 											<Image
-												src={catName.pictureUrl}
+												src={ownedCat.pictureUrl}
 												alt="Cat"
 												className="h-16 w-16 object-cover"
 												width={64}
@@ -42,6 +65,7 @@ const MyCatNames = async () => {
 										) : (
 											'No picture'
 										)}
+										<Link href={`/my-names/${ownedCat.id}`}>Edit</Link>
 									</td>
 								</tr>
 							))
@@ -58,7 +82,6 @@ const MyCatNames = async () => {
 					</tbody>
 				</table>
 			</div>
-			<EditMyCat catNameId={1} />
 		</>
 	);
 };
