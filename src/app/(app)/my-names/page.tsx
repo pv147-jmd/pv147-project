@@ -39,7 +39,14 @@ const MyCatNames = () => {
 	}, [user?.id]);
 
 	if (loading) {
-		return <div>Loading...</div>;
+		return (
+			<>
+				<h1 className="text-center text-3xl">Moje kočičky</h1>
+				<div className="flex items-center justify-center">
+					<div className="h-12 w-12 animate-spin rounded-full border-t-4 border-solid border-blue-500 border-opacity-50" />
+				</div>
+			</>
+		);
 	}
 
 	return (
