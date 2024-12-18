@@ -6,9 +6,9 @@ import { getCatNameById } from '@/db/catNames/actions';
 const Page = async ({
 	params
 }: {
-	params: {
+	params: Promise<{
 		slug: string;
-	};
+	}>;
 }) => {
 	const id = await params;
 	const userCatName = await getUsersCatNameById(Number(id.slug));

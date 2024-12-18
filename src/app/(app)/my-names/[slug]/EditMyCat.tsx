@@ -12,7 +12,7 @@ export const EditMyCat = ({
 	userCatName,
 	name
 }: {
-	userCatName: { id: number; pictureUrl: string | null; userId: number };
+	userCatName: { id: number; pictureUrl: string; userId: number };
 	name: string;
 }) => (
 	// const { user } = useUser();
@@ -36,7 +36,7 @@ export const EditMyCat = ({
 				<div className="block text-sm font-medium text-gray-700">Jméno:</div>
 				<div className="ml-2 mt-1">{name}</div>
 			</div>
-			{userCatName.pictureUrl && (
+			{userCatName.pictureUrl !== '' && (
 				<Image
 					src={userCatName.pictureUrl}
 					alt="Cat"
