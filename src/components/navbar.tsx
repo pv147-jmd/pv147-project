@@ -1,81 +1,163 @@
 'use client';
+
 import Link from 'next/link';
-import { useUser } from "@/context/UserContext";
 import { useRouter } from 'next/navigation';
-import { signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from 'next-auth/react';
+import { useState } from 'react';
+
+import { useUser } from '@/context/UserContext';
 
 export const Navbar = () => {
 	const { user, logout } = useUser();
 	const router = useRouter();
 	const { data: session } = useSession();
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
 	const handleLogout = async () => {
 		if (session?.user) {
-		  await signOut({ redirect: true });
+			await signOut({ redirect: true });
 		} else if (user) {
-		  logout();
+			logout();
 		}
 		router.push('/');
 	};
 
 	return (
-	<header className="bg-white shadow">
-	<div className="container mx-auto flex items-center justify-between py-4 px-6">
-		<Link href="/" className="flex items-center text-xl font-bold text-gray-800">
-			<img src="/favicon.ico" alt="Icon" className="w-10 h-10 mr-2" />
-			Generátor kočičích jmen
-		</Link>
-
-		<nav className="flex items-center gap-x-6">
-		<Link
-			href="/generate"
-			className="text-gray-600 hover:text-gray-800 transition"
-		>
-			Generování jmen
-		</Link>
-		{ (user || session?.user) && 
-		<Link
-			href="/my-names"
-			className="text-gray-600 hover:text-gray-800 transition"
-		>
-			Moje jména
-		</Link>}
-		</nav>
-
-		{ (!user && !session?.user) && 
-		<div className="flex items-center gap-x-4">
-		<nav className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition">
-			<Link
-				href="/login"
-			>
-				Přihlásit se
-			</Link>
-		</nav>
-		<nav className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded hover:bg-blue-700 transition">
-			<Link
-				href="/register"
-			>
-				Registrovat se
-			</Link>
-		</nav>
-		</div>}
-
-		{(user || session?.user) && (
-			<div className="flex items-center gap-x-4">
-				<p className="text-sm text-gray-800 font-medium">
-				Přihlášen jako: {user && <span className="font-semibold">{user.email}</span>}
-				</p>
-				<button
-				onClick={handleLogout}
-				className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 transition duration-200"
+		<header className="bg-white shadow">
+			<div className="container mx-auto flex items-center justify-between px-4 py-4 sm:px-6">
+				<Link
+					href="/"
+					className="flex items-center text-xl font-bold text-gray-800"
 				>
-				Odhlásit se
-				</button>
-			</div>
-		)}
+					<img src="/favicon.ico" alt="Icon" className="mr-2 h-10 w-10" />
+					Generátor kočičích jmen
+				</Link>
 
-		
-	</div>
-	</header>
+				{/* Desktop menu */}
+				<nav className="hidden items-center gap-x-6 lg:flex">
+					<Link
+						href="/generate"
+						className="text-gray-600 transition hover:text-gray-800"
+					>
+						Generování jmen
+					</Link>
+					{(user ?? session?.user) && (
+						<Link
+							href="/my-names"
+							className="text-gray-600 transition hover:text-gray-800"
+						>
+							Moje jména
+						</Link>
+					)}
+				</nav>
+
+				{/* Mobile menu button */}
+				<button
+					className="block text-gray-600 focus:outline-none lg:hidden"
+					onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+				>
+					<svg
+						className="h-6 w-6"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M4 6h16M4 12h16M4 18h16"
+						/>
+					</svg>
+				</button>
+
+				{/* User actions */}
+				<div className="hidden items-center gap-x-4 lg:flex">
+					{!user && !session?.user && (
+						<>
+							<Link
+								href="/login"
+								className="rounded bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200"
+							>
+								Přihlásit se
+							</Link>
+							<Link
+								href="/register"
+								className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+							>
+								Registrovat se
+							</Link>
+						</>
+					)}
+					{(user ?? session?.user) && (
+						<>
+							<p className="text-sm font-medium text-gray-800">
+								Přihlášen:
+								{user && <span className="font-semibold">{user.email}</span>}
+							</p>
+							<button
+								onClick={handleLogout}
+								className="rounded bg-red-500 px-4 py-2 text-white transition duration-200 hover:bg-red-600"
+							>
+								Odhlásit se
+							</button>
+						</>
+					)}
+				</div>
+			</div>
+
+			{/* Mobile menu dropdown */}
+			{isMobileMenuOpen && (
+				<div className="bg-white shadow-md lg:hidden">
+					<nav className="flex flex-col gap-y-4 px-6 py-4">
+						<Link
+							href="/generate"
+							className="text-gray-600 transition hover:text-gray-800"
+							onClick={() => setIsMobileMenuOpen(false)}
+						>
+							Generování jmen
+						</Link>
+						{(user ?? session?.user) && (
+							<Link
+								href="/my-names"
+								className="text-gray-600 transition hover:text-gray-800"
+								onClick={() => setIsMobileMenuOpen(false)}
+							>
+								Moje jména
+							</Link>
+						)}
+						{!user && !session?.user && (
+							<>
+								<Link
+									href="/login"
+									className="rounded bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-200"
+									onClick={() => setIsMobileMenuOpen(false)}
+								>
+									Přihlásit se
+								</Link>
+								<Link
+									href="/register"
+									className="rounded bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+									onClick={() => setIsMobileMenuOpen(false)}
+								>
+									Registrovat se
+								</Link>
+							</>
+						)}
+					</nav>
+					{(user ?? session?.user) && (
+						<div className="border-t border-gray-200 px-6 py-4">
+							<button
+								onClick={handleLogout}
+								className="w-full rounded bg-red-500 px-4 py-2 text-white transition duration-200 hover:bg-red-600"
+							>
+								{user && <span>{user.email}</span>} - Odhlásit se
+							</button>
+						</div>
+					)}
+				</div>
+			)}
+		</header>
 	);
 };

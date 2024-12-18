@@ -16,8 +16,8 @@ const nextConfig: NextConfig = {
 	},
 	env: {
 		TURSO_DB_DATABASE_URL: process.env.TURSO_DB_DATABASE_URL,
-		TURSO_DB_AUTH_TOKEN: process.env.TURSO_DB_AUTH_TOKEN,
-	},
+		TURSO_DB_AUTH_TOKEN: process.env.TURSO_DB_AUTH_TOKEN
+	}
 };
 
 export default nextConfig;
