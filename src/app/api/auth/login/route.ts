@@ -43,7 +43,7 @@ export async function POST(request: Request) {
             { status: 200 }
         );
 
-    } catch (error) {
+    } catch (error: any) {
         // Log full error for debugging
         // console.error("Error during login:", error);
         return NextResponse.json(
