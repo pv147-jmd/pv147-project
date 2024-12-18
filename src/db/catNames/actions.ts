@@ -1,8 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { sql, like } from "drizzle-orm";
+import { sql, like, eq, notInArray } from "drizzle-orm";
 import { catNames } from "../schema/catNames";
+import { usersCatNames } from "../schema/usersCatNames";
 
 export async function getAllCatNames() {
 	return await db.query.catNames.findMany();
@@ -11,9 +12,24 @@ export async function getAllCatNames() {
 export async function getRandomCatNames() {
 	return await db.query.catNames.findMany({
 	limit: 10,
-	orderBy: sql`RANDOM()`,
+	orderBy: sql`RANDOM()`
 	});
 }
+
+export async function getRandomCatNamesWithoutUsers(userId: number) {
+	const userNames = await db
+		.select({ nameId: usersCatNames.catNameId })
+		.from(usersCatNames)
+		.where(eq(usersCatNames.userId, userId));
+
+	const userNameIds = userNames.map((entry) => entry.nameId);
+
+	return await db.query.catNames.findMany({
+		limit: 10,
+		orderBy: sql`RANDOM()`,
+		where: notInArray(catNames.id, userNameIds),
+		});
+};
 
 export async function searchCatNames(searchTerm: string) {
 	if (!searchTerm) return getAllCatNames();
