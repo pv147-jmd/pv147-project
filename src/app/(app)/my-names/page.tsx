@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import { getUsersCatNames } from '@/db/queries/usersCatNamesQueries';
 import { useUser } from '@/context/UserContext';
@@ -46,7 +46,7 @@ const MyCatNames = () => {
 		<>
 			<h1 className="text-center text-3xl">Moje kočičky</h1>
 
-			<div className="md: mt-10 grid grid-cols-1 grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+			<div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
 				{ownedCats.length > 0 ? (
 					ownedCats.map(ownedCat => (
 						// eslint-disable-next-line jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events
@@ -57,12 +57,14 @@ const MyCatNames = () => {
 						>
 							{ownedCat.pictureUrl ? (
 								<div className="relative mx-auto h-48 w-48">
-									<Image
-										src={ownedCat.pictureUrl}
-										alt="Cat"
-										className="object-cover"
-										fill
-									/>
+									<Suspense fallback={<div>Obrázek bude</div>}>
+										<Image
+											src={ownedCat.pictureUrl}
+											alt="Cat"
+											className="object-cover"
+											fill
+										/>
+									</Suspense>
 								</div>
 							) : (
 								<div className="mx-auto flex h-48 w-48 items-center justify-center bg-gray-200">
