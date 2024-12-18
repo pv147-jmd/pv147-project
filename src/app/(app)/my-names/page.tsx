@@ -1,64 +1,85 @@
+'use client';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { db } from '@/db';
-import { EditMyCat } from '@/app/(app)/my-names/[slug]/EditMyCat';
 import { getUsersCatNames } from '@/db/queries/usersCatNamesQueries';
+import { useUser } from '@/context/UserContext';
+import { type UsersCatNames } from '@/db/schema/usersCatNames';
+import { getCatNameById } from '@/db/catNames/actions';
 
-const MyCatNames = async () => {
-	const ownedCats = await getUsersCatNames(1);
+const MyCatNames = () => {
+	const { user } = useUser();
+	const [ownedCats, setOwnedCats] = useState<
+		(UsersCatNames & { catName: string })[]
+	>([]);
+	const [loading, setLoading] = useState(true);
+	const { data: session } = useSession();
+	const router = useRouter();
+
+	useEffect(() => {
+		const fetchOwnedCats = async (userId: number) => {
+			const cats = await getUsersCatNames(userId);
+			const catsWithNames = await Promise.all(
+				cats.map(async cat => {
+					const catName = await getCatNameById(cat.catNameId);
+					if (!catName) {
+						return { ...cat, catName: 'N/A' };
+					}
+					return { ...cat, catName: catName.name };
+				})
+			);
+			setOwnedCats(catsWithNames);
+			setLoading(false);
+		};
+		if (user?.id) {
+			fetchOwnedCats(user.id);
+		}
+	}, [user?.id]);
+
+	if (loading) {
+		return <div>Loading...</div>;
+	}
+
 	return (
 		<>
-			<h1 className="text-3xl">Moje kočičky</h1>
+			<h1 className="text-center text-3xl">Moje kočičky</h1>
 
-			<div className="mt-10">
-				<table className="min-w-full border-collapse border border-gray-300 bg-white shadow-sm">
-					<thead>
-						<tr className="bg-gray-100">
-							<th className="border border-gray-300 px-4 py-2 text-left">#</th>
-							<th className="border border-gray-300 px-4 py-2 text-left">
-								Jméno
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{ownedCats.length > 0 ? (
-							ownedCats.map((catName, index) => (
-								<tr key={catName.catNameId} className="hover:bg-gray-50">
-									<td className="border border-gray-300 px-4 py-2">
-										{index + 1}
-									</td>
-									<td className="border border-gray-300 px-4 py-2">
-										jméno kočky
-									</td>
-									<td className="border border-gray-300 px-4 py-2">
-										{catName.pictureUrl ? (
-											<Image
-												src={catName.pictureUrl}
-												alt="Cat"
-												className="h-16 w-16 object-cover"
-												width={64}
-												height={64}
-											/>
-										) : (
-											'No picture'
-										)}
-									</td>
-								</tr>
-							))
-						) : (
-							<tr>
-								<td
-									colSpan={3}
-									className="border border-gray-300 px-4 py-2 text-center text-gray-500"
-								>
-									Nemáte přiřazená žádná jména koček.
-								</td>
-							</tr>
-						)}
-					</tbody>
-				</table>
+			<div className="md: mt-10 grid grid-cols-1 grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+				{ownedCats.length > 0 ? (
+					ownedCats.map(ownedCat => (
+						// eslint-disable-next-line jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events
+						<div
+							key={ownedCat.id}
+							className="cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-md hover:shadow-lg"
+							onClick={() => router.push(`/my-names/${ownedCat.id}`)}
+						>
+							{ownedCat.pictureUrl ? (
+								<div className="relative mx-auto h-48 w-48">
+									<Image
+										src={ownedCat.pictureUrl}
+										alt="Cat"
+										className="object-cover"
+										fill
+									/>
+								</div>
+							) : (
+								<div className="mx-auto flex h-48 w-48 items-center justify-center bg-gray-200">
+									No picture
+								</div>
+							)}
+							<div className="mt-4 text-center text-xl font-semibold">
+								{ownedCat.catName}
+							</div>
+						</div>
+					))
+				) : (
+					<div className="col-span-full text-center text-gray-500">
+						Nemáte přiřazená žádná jména koček.
+					</div>
+				)}
 			</div>
-			<EditMyCat catNameId={1} />
 		</>
 	);
 };
