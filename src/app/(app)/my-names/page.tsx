@@ -20,11 +20,6 @@ const MyCatNames = () => {
 	const { data: session } = useSession();
 	const router = useRouter();
 
-	const currentUser = user ? user : session?.user ? session.user : null;
-	if (!currentUser) {
-		redirect('/login');
-	}
-
 	useEffect(() => {
 		const fetchOwnedCats = async (userId: number) => {
 			const cats = await getUsersCatNames(userId);
@@ -39,9 +34,16 @@ const MyCatNames = () => {
 			);
 			setOwnedCats(catsWithNames);
 		};
-		fetchOwnedCats(Number(currentUser.id));
-	}, [currentUser.id]);
+		fetchOwnedCats(user?.id);
+	}, [user?.id]);
 
+	// const currentUser = user ? user : null;
+	// if (!currentUser) {
+	// 	redirect('/login');
+	// }
+	// if (!currentUser.id) {
+	// 	return <div>Not working</div>;
+	// }
 	return (
 		<>
 			<h1 className="text-center text-3xl">Moje kočičky</h1>
@@ -49,6 +51,7 @@ const MyCatNames = () => {
 			<div className="md: mt-10 grid grid-cols-1 grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-5">
 				{ownedCats.length > 0 ? (
 					ownedCats.map(ownedCat => (
+						// eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
 						<div
 							key={ownedCat.id}
 							className="cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-md hover:shadow-lg"
