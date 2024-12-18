@@ -1,43 +1,44 @@
-import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { users } from "@/db/schema/users";
-import bcrypt from "bcrypt";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcrypt';
 
-export async function POST(request: Request) {
-  try {
-    const { email, password, nickname } = await request.json();
+import { db } from '@/db';
+import { users } from '@/db/schema/users';
 
-    if (!email || !password || !nickname) {
-      return NextResponse.json(
-        { message: "All fields are required" },
-        { status: 400 }
-      );
-    }
+export const POST = async (request: Request) => {
+	try {
+		const { email, password, nickname } = await request.json();
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+		if (!email || !password || !nickname) {
+			return NextResponse.json(
+				{ message: 'All fields are required' },
+				{ status: 400 }
+			);
+		}
 
-    await db.insert(users).values({
-      nickname,
-      email,
-      password: hashedPassword,
-    });
+		const hashedPassword = await bcrypt.hash(password, 10);
 
-    return NextResponse.json(
-      { message: "User registered successfully" },
-      { status: 201 }
-    );
-  } catch (error: any) {
-    if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
-      return NextResponse.json(
-        { message: "Email already in use" },
-        { status: 409 }
-      );
-    }
+		await db.insert(users).values({
+			nickname,
+			email,
+			password: hashedPassword
+		});
 
-    // console.error("Error registering user:", error);
-    return NextResponse.json(
-      { message: "Error registering user", error: error.message },
-      { status: 500 }
-    );
-  }
-}
+		return NextResponse.json(
+			{ message: 'User registered successfully' },
+			{ status: 201 }
+		);
+	} catch (error: any) {
+		if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+			return NextResponse.json(
+				{ message: 'Email already in use' },
+				{ status: 409 }
+			);
+		}
+
+		// console.error("Error registering user:", error);
+		return NextResponse.json(
+			{ message: 'Error registering user', error: error.message },
+			{ status: 500 }
+		);
+	}
+};

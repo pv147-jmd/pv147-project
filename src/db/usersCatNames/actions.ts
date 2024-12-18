@@ -1,25 +1,30 @@
 'use server';
 
-import { db } from '@/db';
-import { usersCatNames } from '../schema/usersCatNames';
-import { eq } from "drizzle-orm";
+import { eq } from 'drizzle-orm';
 
-export async function assignCatNameToUser(userId: number, catNameId: number) {
+import { db } from '@/db';
+
+import { usersCatNames } from '../schema/usersCatNames';
+
+export const assignCatNameToUser = async (
+	userId: number,
+	catNameId: number
+) => {
 	try {
 		await db.insert(usersCatNames).values({ userId, catNameId });
-	
+
 		return { success: true, message: 'Kočičí jméno přiřazeno' };
 	} catch (error) {
 		console.error('Chyba při přiřazování jména:', error);
 		throw new Error('Nepodařilo se přiřadit kočičí jméno.');
 	}
-}
+};
 
-export async function getAssignedCatNames(userId: number) {
+export const getAssignedCatNames = async (userId: number) => {
 	const userNames = await db
 		.select({ nameId: usersCatNames.catNameId })
 		.from(usersCatNames)
 		.where(eq(usersCatNames.userId, userId));
-	
+
 	return userNames.map(entry => entry.nameId);
-}
+};

@@ -1,11 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { TableCatNames } from "@/components/table-cat-names";
-import { addCatName, getAllCatNames, getRandomCatNames, getRandomCatNamesWithoutUsers, searchCatNames } from "@/db/catNames/actions";
-import { assignCatNameToUser } from "@/db/usersCatNames/actions";
-import { useUser } from "@/context/UserContext";
-import { useSession } from "next-auth/react";
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+
+import { TableCatNames } from '@/components/table-cat-names';
+import {
+	addCatName,
+	getAllCatNames,
+	getRandomCatNames,
+	getRandomCatNamesWithoutUsers,
+	searchCatNames
+} from '@/db/catNames/actions';
+import { useUser } from '@/context/UserContext';
 
 type CatName = {
 	id: number;
@@ -16,9 +22,10 @@ type CatName = {
 const GeneratePage = () => {
 	const [catNames, setCatNames] = useState<CatName[]>([]);
 	const [showAllNames, setShowAllNames] = useState(false);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [newCatName, setNewCatName] = useState("");
-	
+	const [searchTerm, setSearchTerm] = useState('');
+	const [newCatName, setNewCatName] = useState('');
+	const [isLoading, setIsLoading] = useState(true);
+
 	const { user } = useUser();
 	const { data: session } = useSession();
 
@@ -26,108 +33,118 @@ const GeneratePage = () => {
 		const fetchInitialData = async () => {
 			const initialCatNames = await getRandomCatNames();
 			setCatNames(initialCatNames);
+			setIsLoading(false);
 		};
 		fetchInitialData();
 	}, []);
 
 	const handleRandomNames = async () => {
-		const randomNames = await getRandomCatNamesWithoutUsers(user == undefined ? 0 : user?.id);
-		const updatedNames = randomNames.map((name) => ({
+		setIsLoading(true);
+		const randomNames = await getRandomCatNamesWithoutUsers(user?.id ?? 0);
+		const updatedNames = randomNames.map(name => ({
 			...name,
-			userId: null,
+			userId: null
 		}));
 
 		setCatNames(updatedNames);
-		setSearchTerm("");
+		setSearchTerm('');
 		setShowAllNames(false);
+		setIsLoading(false);
 	};
 
 	const handleAllNames = async () => {
+		setIsLoading(true);
 		const allNames = await getAllCatNames();
 		setCatNames(allNames);
-		setSearchTerm("");
+		setSearchTerm('');
 		setShowAllNames(true);
+		setIsLoading(false);
 	};
 
 	const handleSearch = async (term: string) => {
+		setIsLoading(true);
 		const filteredNames = await searchCatNames(term);
 		setCatNames(filteredNames);
+		setIsLoading(false);
 	};
 
 	const handleSaveNewCatName = async () => {
-		if (!newCatName.trim()) return alert("Zadejte platné jméno.");
-		await addCatName(newCatName, (user == undefined ? 0 : user?.id));
-		setNewCatName("");
-		alert("Jméno bylo úspěšně uloženo!");
-	};
-
-	const handleAddToMyNames = async () => {
-		const nameId = await addCatName(newCatName, 1);
-		await assignCatNameToUser((user == undefined ? 0 : user?.id), nameId);
-		alert("Jméno bylo uloženo a přidáno do vašich jmen!");
+		if (!newCatName.trim()) return alert('Zadejte platné jméno.');
+		await addCatName(newCatName, user?.id ?? 0);
+		handleSearch(newCatName);
+		setNewCatName('');
 	};
 
 	return (
-	<>
-		<div className="flex justify-between items-center mt-6">
-			<h1 className="text-3xl">Generování kočičích jmen</h1>
-			<div>
-				<button
-				onClick={handleRandomNames}
-				className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-				>
-				10 náhodných jmen
-				</button>
-				<button
-				onClick={handleAllNames}
-				className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-				>
-				Všechna jména
-				</button>
-			</div>
-		</div>
-
-		{showAllNames && (
-			<div className="flex flex-col justify-center items-center mt-8">
-				<div className="flex items-center mb-4">
-					<label className="mr-4">Vyhledat:</label>
-					<input
-						type="text"
-						value={searchTerm}
-						onChange={async (e) => {
-							const value = e.target.value;
-							setSearchTerm(value);
-							await handleSearch(value);
-							setNewCatName(value);
-						}}
-						placeholder="Vyhledat jméno"
-						className="mr-2 rounded border border-gray-300 px-4 py-2"
-					/>
+		<>
+			<div className="flex items-center justify-between">
+				<h1 className="hidden text-3xl md:flex">Generování kočičích jmen</h1>
+				<div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+					<button
+						onClick={handleRandomNames}
+						className="rounded bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
+					>
+						10 náhodných jmen
+					</button>
+					<button
+						onClick={handleAllNames}
+						className="rounded bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
+					>
+						Všechna jména
+					</button>
 				</div>
+			</div>
 
-				{(user || session?.user) && (searchTerm.trim() && (catNames.length === 0 || !catNames.find((cat) => cat.name.toLowerCase() === searchTerm.trim().toLowerCase()))) && (
-					<div className="flex gap-2">
-						<button
-							onClick={handleSaveNewCatName}
-							className="rounded bg-yellow-500 px-4 py-2 text-white hover:bg-yellow-600"
-						>
-							Uložit nové jméno
-						</button>
-						<button
-							onClick={() => handleAddToMyNames}
-							className="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600"
-						>
-							Uložit nové a přidat do mých jmen
-						</button>
+			{showAllNames && (
+				<div className="mt-2 flex flex-col items-center justify-center">
+					<div className="mb-2 flex items-center">
+						<label htmlFor="searchInput" className="mr-4">
+							Vyhledat:
+						</label>
+						<input
+							type="text"
+							value={searchTerm}
+							onChange={async e => {
+								const value = e.target.value;
+								setSearchTerm(value);
+								await handleSearch(value);
+								setNewCatName(value);
+							}}
+							placeholder="Vyhledat jméno"
+							className="mr-2 w-40 rounded border border-gray-300 px-4 py-2 sm:w-auto"
+						/>
 					</div>
+
+					{(user ?? session?.user) &&
+						searchTerm.trim() &&
+						(catNames.length === 0 ||
+							!catNames.find(
+								cat =>
+									cat.name.toLowerCase() === searchTerm.trim().toLowerCase()
+							)) &&
+						!isLoading && (
+							<div className="flex gap-2">
+								<button
+									onClick={handleSaveNewCatName}
+									className="rounded bg-yellow-500 px-4 py-2 text-white hover:bg-yellow-600"
+								>
+									Uložit nové jméno
+								</button>
+							</div>
+						)}
+				</div>
+			)}
+
+			<div className="mt-2">
+				{isLoading ? (
+					<div className="flex items-center justify-center">
+						<div className="h-12 w-12 animate-spin rounded-full border-t-4 border-solid border-blue-500 border-opacity-50" />
+					</div>
+				) : (
+					<TableCatNames catNames={catNames} userId={user?.id ?? 0} />
 				)}
 			</div>
-		)}
-
-		<div className="mt-10">
-			<TableCatNames catNames={catNames} userId={user == undefined ? 0 : user?.id} />
-		</div>
-	</>
+		</>
 	);
 };
 
