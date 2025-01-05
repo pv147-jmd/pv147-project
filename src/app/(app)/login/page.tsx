@@ -4,7 +4,9 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 
-import { useUser } from '@/context/UserContext';
+// import { useUser } from '@/context/UserContext';
+
+// Heslo na test: TestPassword123
 
 const Login = () => {
 	const [formData, setFormData] = useState({ email: '', password: '' });
@@ -12,14 +14,14 @@ const Login = () => {
 	const [success, setSuccess] = useState(false);
 	const searchParams = useSearchParams();
 	const router = useRouter();
-	const { setUser } = useUser();
+	// const { setUser } = useUser();
 
 	const handleGoogleLogin = async () => {
 		await signIn('google', { redirectTo: '/' });
 	};
 
 	useEffect(() => {
-		if (searchParams.get('registered') === 'true') {
+		if (searchParams.get("registered") === 'true') {
 			setSuccess(true);
 		}
 	}, [searchParams]);
@@ -33,24 +35,36 @@ const Login = () => {
 			return;
 		}
 
-		const { ...payload } = formData;
+		// const { ...payload } = formData;
 
 		try {
-			const response = await fetch('/api/auth/login', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload)
+			// const response = await fetch('/api/auth/login', {
+			// 	method: 'POST',
+			// 	headers: { 'Content-Type': 'application/json' },
+			// 	body: JSON.stringify(payload)
+			// });
+
+			// const data = await response.json();
+
+			// if (response.ok) {
+			// 	setUser(data.user);
+			// 	localStorage.setItem('user', JSON.stringify(data.user));
+			// 	router.replace('/');
+			// } else {
+			// 	const { message } = data;
+			// 	setError(message || 'Neplatný e-mail nebo heslo.');
+			// }
+
+			const result = await signIn('credentials', {
+				redirect: false, // Prevent auto-redirection, handle it manually
+				email: formData.email,
+				password: formData.password
 			});
 
-			const data = await response.json();
-
-			if (response.ok) {
-				setUser(data.user);
-				localStorage.setItem('user', JSON.stringify(data.user));
-				router.replace('/');
+			if (result?.error) {
+				setError(result.error);
 			} else {
-				const { message } = data;
-				setError(message || 'Neplatný e-mail nebo heslo.');
+				router.replace('/'); // Redirect to the home page or dashboard
 			}
 		} catch (error: any) {
 			console.error('Fetch error:', error.message || error);
