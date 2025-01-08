@@ -42,12 +42,20 @@ export const Navbar = () => {
 						Generování jmen
 					</Link>
 					{(user ?? session?.user) && (
-						<Link
-							href="/my-names"
-							className="text-gray-600 transition hover:text-gray-800"
-						>
-							Moje jména
-						</Link>
+						<>
+							<Link
+								href="/quick-upload"
+								className="text-gray-600 transition hover:text-gray-800"
+							>
+								Přidat kočičku
+							</Link>
+							<Link
+								href="/my-names"
+								className="text-gray-600 transition hover:text-gray-800"
+							>
+								Moje jména
+							</Link>
+						</>
 					)}
 				</nav>
 
