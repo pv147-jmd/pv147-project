@@ -5,7 +5,8 @@ export default {
 	dialect: 'turso',
 	dbCredentials: {
 		url: process.env.TURSO_DB_DATABASE_URL!,
-		authToken: process.env.TURSO_DB_AUTH_TOKEN
+		authToken: process.env.TURSO_DB_AUTH_TOKEN,
+		secret: process.env.NEXTAUTH_SECRET
 	},
 	out: '.drizzle'
 } satisfies Config;

@@ -38,25 +38,9 @@ const Login = () => {
 		// const { ...payload } = formData;
 
 		try {
-			// const response = await fetch('/api/auth/login', {
-			// 	method: 'POST',
-			// 	headers: { 'Content-Type': 'application/json' },
-			// 	body: JSON.stringify(payload)
-			// });
-
-			// const data = await response.json();
-
-			// if (response.ok) {
-			// 	setUser(data.user);
-			// 	localStorage.setItem('user', JSON.stringify(data.user));
-			// 	router.replace('/');
-			// } else {
-			// 	const { message } = data;
-			// 	setError(message || 'Neplatný e-mail nebo heslo.');
-			// }
 
 			const result = await signIn('credentials', {
-				redirect: false, // Prevent auto-redirection, handle it manually
+				redirect: false, 
 				email: formData.email,
 				password: formData.password
 			});
@@ -64,7 +48,7 @@ const Login = () => {
 			if (result?.error) {
 				setError(result.error);
 			} else {
-				router.replace('/'); // Redirect to the home page or dashboard
+				router.replace('/');
 			}
 		} catch (error: any) {
 			console.error('Fetch error:', error.message || error);

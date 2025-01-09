@@ -10,8 +10,15 @@ import { useState } from 'react';
 export const Navbar = () => {
 	// const { user, logout } = useUser();
 	const router = useRouter();
-	const { data: session } = useSession();
+	const { data: session, status } = useSession();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+	console.log("Session Data:", session);
+	console.log("Session Status:", status);
+
+	// if (status === 'loading') {
+	// 	return <p>Loading...</p>;
+	// }
 
 	const handleLogout = async () => {
 		if (session?.user) {

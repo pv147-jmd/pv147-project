@@ -8,6 +8,9 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter';
 
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
+import { verificationTokens } from './db/schema/tokens';
+import { accounts } from './db/schema/accounts';
+import { sessions } from './db/schema/sessions';
 
 export const authOptions = {
 	providers: [
@@ -63,7 +66,17 @@ export const authOptions = {
 			}
 		})
 	],
-	adapter: DrizzleAdapter(db),
+	adapter: DrizzleAdapter(db, {
+		usersTable: users,
+		sessionsTable: sessions,
+		accountsTable: accounts,
+		verificationTokensTable: verificationTokens
+	}),
+	session: {
+		strategy: 'jwt', 
+		maxAge: 30 * 24 * 60 * 60, 
+		updateAge: 24 * 60 * 60,   
+	},
 	debug: true,
 	callbacks: {
 		session: async ({ session, token }: { session: Session; token: JWT }) => {
@@ -81,8 +94,16 @@ export const authOptions = {
 			user?: User;
 			account?: Account | null;
 		}) => {
+
+			console.log('JWT callback:', { token, user, account });
 			if (user) {
-				token.user = user;
+				if (!token.user) {
+					token.user = {
+						id: user?.id,
+						email: user?.email,
+						name: user?.name,
+					};
+				}
 			}
 
 			if (account?.provider === 'google') {
@@ -100,16 +121,16 @@ export const authOptions = {
 					});
 				}
 
-				// Attach user info to the token
-				token.user = {
-					id: user?.id,
-					email: user?.email,
-					name: user?.name,
-					image: user?.image
-				};
+				if (!token.user) {
+					token.user = {
+						id: user?.id,
+						email: user?.email,
+						name: user?.name,
+					};
+				}
 
 			}
 			return token;
-		}
+		},
 	}
 };

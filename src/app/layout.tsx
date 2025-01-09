@@ -8,6 +8,7 @@ import { Providers } from '@/components/providers';
 import { Navbar } from '@/components/navbar';
 import SessionWrapper from '@/components/session-wrapper';
 import { SessionProvider } from 'next-auth/react';
+import { AuthProvider } from '@/components/AuthProvider';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400'] });
 
@@ -24,14 +25,14 @@ const RootLayout = ({
 		<body
 			className={`flex min-h-screen flex-col bg-gray-200 ${poppins.className}`}
 		>
-			<SessionWrapper>
+			<AuthProvider>
 				{/* <UserProvider> */}
 					<Navbar />
 					<main className="container py-4">
 						<Providers>{children}</Providers>
 					</main>
 				{/* </UserProvider> */}
-			</SessionWrapper>
+			</AuthProvider>
 		</body>
 	</html>
 );

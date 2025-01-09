@@ -22,6 +22,13 @@
       "when": 1736083757595,
       "tag": "0002_magenta_black_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1736431833442,
+      "tag": "0003_quick_abomination",
+      "breakpoints": true
     }
   ]
 }
