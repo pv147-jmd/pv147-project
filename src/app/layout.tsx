@@ -4,9 +4,8 @@ import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 
 import { Providers } from '@/components/providers';
-import { UserProvider } from '@/context/UserContext';
 import { Navbar } from '@/components/navbar';
-import SessionWrapper from '@/components/session-wrapper';
+import { AuthProvider } from '@/components/AuthProvider';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400'] });
 
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = ({
-	children
+	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) => (
@@ -23,14 +22,14 @@ const RootLayout = ({
 		<body
 			className={`flex min-h-screen flex-col bg-gray-200 ${poppins.className}`}
 		>
-			<SessionWrapper>
-				<UserProvider>
+			<AuthProvider>
+				{/* <UserProvider> */}
 					<Navbar />
 					<main className="container py-4">
 						<Providers>{children}</Providers>
 					</main>
-				</UserProvider>
-			</SessionWrapper>
+				{/* </UserProvider> */}
+			</AuthProvider>
 		</body>
 	</html>
 );

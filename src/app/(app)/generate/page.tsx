@@ -4,73 +4,57 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 import { TableCatNames } from '@/components/table-cat-names';
+import { addCatName, searchCatNames } from '@/db/catNames/actions';
 import {
-	addCatName,
-	getAllCatNames,
-	getRandomCatNames,
-	getRandomCatNamesWithoutUsers,
-	searchCatNames
-} from '@/db/catNames/actions';
-import { useUser } from '@/context/UserContext';
-
-type CatName = {
-	id: number;
-	name: string;
-	userId: number | null;
-};
+	useAllCatNames,
+	CatName,
+	useTenRandomCatNames
+} from '@/db/queries/catNamesQueries';
 
 const GeneratePage = () => {
-	const [catNames, setCatNames] = useState<CatName[]>([]);
 	const [showAllNames, setShowAllNames] = useState(false);
+	const [catNames, setCatNames] = useState<CatName[]>([]);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [newCatName, setNewCatName] = useState('');
-	const [isLoading, setIsLoading] = useState(true);
 
-	const { user } = useUser();
 	const { data: session } = useSession();
 
-	useEffect(() => {
-		const fetchInitialData = async () => {
-			const initialCatNames = await getRandomCatNames();
-			setCatNames(initialCatNames);
-			setIsLoading(false);
-		};
-		fetchInitialData();
-	}, []);
+	const { data: allCatNames, isLoading: isLoadingAllNames } = useAllCatNames();
 
-	const handleRandomNames = async () => {
-		setIsLoading(true);
-		const randomNames = await getRandomCatNamesWithoutUsers(user?.id ?? 0);
-		const updatedNames = randomNames.map(name => ({
-			...name,
-			userId: null
-		}));
+	const userId = session?.user?.id ? session.user.id : "-1";
+	const {
+		data: randomCatNames,
+		isLoading: isLoadingRandomNames,
+		refetch
+	} = useTenRandomCatNames(userId);
 
-		setCatNames(updatedNames);
+	const dataCatNames: CatName[] = showAllNames
+		? (allCatNames ?? [])
+		: (randomCatNames ?? []);
+
+	const isLoading = showAllNames ? isLoadingAllNames : isLoadingRandomNames;
+
+	const handleRandomNames = () => {
 		setSearchTerm('');
+		setCatNames([]);
 		setShowAllNames(false);
-		setIsLoading(false);
+		refetch();
 	};
 
-	const handleAllNames = async () => {
-		setIsLoading(true);
-		const allNames = await getAllCatNames();
-		setCatNames(allNames);
+	const handleAllNames = () => {
 		setSearchTerm('');
+		setCatNames([]);
 		setShowAllNames(true);
-		setIsLoading(false);
 	};
 
 	const handleSearch = async (term: string) => {
-		setIsLoading(true);
 		const filteredNames = await searchCatNames(term);
 		setCatNames(filteredNames);
-		setIsLoading(false);
 	};
 
 	const handleSaveNewCatName = async () => {
 		if (!newCatName.trim()) return alert('Zadejte platné jméno.');
-		await addCatName(newCatName, user?.id ?? 0);
+		await addCatName(newCatName, session!.user?.id ?? "0");
 		handleSearch(newCatName);
 		setNewCatName('');
 	};
@@ -115,7 +99,7 @@ const GeneratePage = () => {
 						/>
 					</div>
 
-					{(user ?? session?.user) &&
+					{(session?.user) &&
 						searchTerm.trim() &&
 						(catNames.length === 0 ||
 							!catNames.find(
@@ -141,7 +125,7 @@ const GeneratePage = () => {
 						<div className="h-12 w-12 animate-spin rounded-full border-t-4 border-solid border-blue-500 border-opacity-50" />
 					</div>
 				) : (
-					<TableCatNames catNames={catNames} userId={user?.id ?? 0} />
+					<TableCatNames catNames={catNames.length <= 0 && searchTerm.length == 0 ? dataCatNames : catNames} userId={session?.user?.id ?? "0"} />
 				)}
 			</div>
 		</>

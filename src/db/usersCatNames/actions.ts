@@ -7,7 +7,7 @@ import { db } from '@/db';
 import { usersCatNames } from '../schema/usersCatNames';
 
 export const assignCatNameToUser = async (
-	userId: number,
+	userId: string,
 	catNameId: number
 ) => {
 	try {
@@ -20,7 +20,7 @@ export const assignCatNameToUser = async (
 	}
 };
 
-export const getAssignedCatNames = async (userId: number) => {
+export const getAssignedCatNames = async (userId: string) => {
 	const userNames = await db
 		.select({ nameId: usersCatNames.catNameId })
 		.from(usersCatNames)

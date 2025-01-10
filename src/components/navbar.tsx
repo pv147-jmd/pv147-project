@@ -41,7 +41,7 @@ export const Navbar = () => {
 					>
 						Generování jmen
 					</Link>
-					{(user ?? session?.user) && (
+					{(session?.user) && (
 						<>
 							<Link
 								href="/quick-upload"
