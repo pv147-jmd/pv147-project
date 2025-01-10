@@ -1,9 +1,16 @@
-'use server';
-import { eq, and } from 'drizzle-orm';
+
+import { eq, and, sql } from 'drizzle-orm';
 
 import { usersCatNames } from '@/db/schema/usersCatNames';
 
 import { db } from '..';
+import { catNames } from '../schema/catNames';
+import { useQuery } from '@tanstack/react-query';
+
+type CatNameUsage = {
+	name: string;
+	usageCount: number;
+};
 
 export const getUsersCatNames = async (userId: string) =>
 	db.query.usersCatNames.findMany({
@@ -23,3 +30,27 @@ export const addPictureToUsersCat = async (
 		.update(usersCatNames)
 		.set({ pictureUrl: picture })
 		.where(eq(usersCatNames.id, userCatNameId));
+
+export const getUsedCatNamesWithCount = async (): Promise<CatNameUsage[]> => {
+	const result = await db
+		.select({
+		name: catNames.name,
+		usageCount: sql`COUNT(${usersCatNames.catNameId})`.as('usageCount'),
+		})
+		.from(catNames)
+		.leftJoin(usersCatNames, sql`${usersCatNames.catNameId} = ${catNames.id}`)
+		.groupBy(catNames.id)
+		.having(sql`COUNT(${usersCatNames.catNameId}) > 0`)
+		.orderBy(sql`usageCount DESC`);
+	
+	return result.map(row => ({
+		name: row.name,
+		usageCount: Number(row.usageCount)
+		}));
+};
+
+export const useGetUsedCatNamesWithCount = () =>
+	useQuery<CatNameUsage[]>({
+		queryKey: ['usedCatNames'],
+		queryFn: getUsedCatNamesWithCount
+});
