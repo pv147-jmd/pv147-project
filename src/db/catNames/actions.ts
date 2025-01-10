@@ -15,7 +15,7 @@ export const getRandomCatNames = async () =>
 		orderBy: sql`RANDOM()`
 	});
 
-export const getRandomCatNamesWithoutUsers = async (userId: number) => {
+export const getRandomCatNamesWithoutUsers = async (userId: string) => {
 	const userNames = await db
 		.select({ nameId: usersCatNames.catNameId })
 		.from(usersCatNames)
@@ -37,7 +37,7 @@ export const searchCatNames = async (searchTerm: string) => {
 	});
 };
 
-export const addCatName = async (name: string, userId: number) => {
+export const addCatName = async (name: string, userId: string) => {
 	const [insertedId] = await db
 		.insert(catNames)
 		.values({

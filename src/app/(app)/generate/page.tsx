@@ -11,11 +11,10 @@ import {
 	useTenRandomCatNames
 } from '@/db/queries/catNamesQueries';
 import { useUser } from '@/context/UserContext';
-
 const GeneratePage = () => {
 	const [showAllNames, setShowAllNames] = useState(false);
 
-	const { user } = useUser();
+	// const { user } = useUser();
 	const { data: session } = useSession();
 
 	const { data: allCatNames, isLoading: isLoadingAllNames } = useAllCatNames();
@@ -54,7 +53,7 @@ const GeneratePage = () => {
 
 	const handleSaveNewCatName = async () => {
 		if (!newCatName.trim()) return alert('Zadejte platné jméno.');
-		await addCatName(newCatName, user?.id ?? 0);
+		await addCatName(newCatName, session?.user?.id ?? "0");
 		handleSearch(newCatName);
 		setNewCatName('');
 	};
@@ -99,7 +98,7 @@ const GeneratePage = () => {
 						/>
 					</div>
 
-					{(user ?? session?.user) &&
+					{(session?.user) &&
 						searchTerm.trim() &&
 						/*(catNames.length === 0 ||
 							!catNames.find(

@@ -10,7 +10,7 @@ export const uploadNames = async (names: string) => {
 
 	for (const name of nameList) {
 		console.log(`Uploading name: ${name}`);
-		await db.insert(catNames).values({ name, userId: 1 });
+		await db.insert(catNames).values({ name, userId: "1" });
 	}
 
 	console.log('Names uploaded successfully');

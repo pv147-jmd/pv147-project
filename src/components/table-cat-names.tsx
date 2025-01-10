@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 
-import { useUser } from '@/context/UserContext';
 import {
 	assignCatNameToUser,
 	getAssignedCatNames
@@ -16,14 +15,14 @@ type CatName = {
 
 type TableCatNamesProps = {
 	catNames: CatName[];
-	userId: number;
+	userId: string;
 };
 
 export const TableCatNames: React.FC<TableCatNamesProps> = ({
 	catNames,
 	userId
 }) => {
-	const { user } = useUser();
+
 	const { data: session } = useSession();
 	const [assignedCatNames, setAssignedCatNames] = useState<number[]>([]);
 	const [loadingCatNames, setLoadingCatNames] = useState<Set<number>>(
@@ -95,7 +94,7 @@ export const TableCatNames: React.FC<TableCatNamesProps> = ({
 						<th className="border border-gray-300 px-4 py-2 text-left">
 							Jméno
 						</th>
-						{(user ?? session?.user) && (
+						{session?.user && (
 							<th className="border border-gray-300 px-4 py-2 text-left">
 								Akce
 							</th>
@@ -112,7 +111,7 @@ export const TableCatNames: React.FC<TableCatNamesProps> = ({
 								<td className="border border-gray-300 px-2 py-2">
 									{catName.name}
 								</td>
-								{(user ?? session?.user) && (
+								{session?.user && (
 									<td className="border border-gray-300 px-2 py-2">
 										{assignedCatNames.includes(catName.id) ? (
 											<button

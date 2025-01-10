@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 
 const Register = () => {
 	const [formData, setFormData] = useState({
@@ -40,7 +41,21 @@ const Register = () => {
 			});
 
 			const data = await response.json();
-			router.push('/login?registered=true');
+			// router.push('/login?registered=true');
+
+			// Sign user in with credentials after register
+			const signInResponse = await signIn('credentials', {
+				redirect: false,
+				email: formData.email,
+				password: formData.password
+			});
+
+			if (signInResponse?.error) {
+				setError(signInResponse.error);
+			} else {
+				// Redirect to home page or dashboard
+				router.push('/');
+			}
 		} catch (error: any) {
 			console.error('Fetch error:', error.message || error);
 			setError('Něco se pokazilo. Zkuste to prosím znovu.');

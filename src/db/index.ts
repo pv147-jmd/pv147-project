@@ -5,6 +5,9 @@ import { catNames, catNamesRelations } from '@/db/schema/catNames';
 import { users } from '@/db/schema/users';
 
 import { usersCatNames, usersCatNamesRelations } from './schema/usersCatNames';
+import { sessions } from './schema/sessions';
+import { verificationTokens } from './schema/tokens';
+import { accounts } from './schema/accounts';
 
 const client = createClient({
 	url: process.env.TURSO_DB_DATABASE_URL!,
@@ -16,7 +19,10 @@ export const db = drizzle(client, {
 		users,
 		catNames,
 		usersCatNames,
-
+		sessions,
+		verificationTokens,
+		accounts,
+		
 		// relations
 		// usersRelations,
 		catNamesRelations,
