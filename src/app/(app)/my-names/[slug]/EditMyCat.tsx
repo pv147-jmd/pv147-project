@@ -12,7 +12,7 @@ export const EditMyCat = ({
 	userCatName,
 	name
 }: {
-	userCatName: { id: number; pictureUrl: string; userId: number };
+	userCatName: { id: number; pictureUrl: string; userId: string };
 	name: string;
 }) => (
 	// const { user } = useUser();

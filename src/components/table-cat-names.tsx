@@ -15,14 +15,14 @@ type CatName = {
 
 type TableCatNamesProps = {
 	catNames: CatName[];
-	userId: number;
+	userId: string;
 };
 
 export const TableCatNames: React.FC<TableCatNamesProps> = ({
 	catNames,
 	userId
 }) => {
-	
+
 	const { data: session } = useSession();
 	const [assignedCatNames, setAssignedCatNames] = useState<number[]>([]);
 	const [loadingCatNames, setLoadingCatNames] = useState<Set<number>>(

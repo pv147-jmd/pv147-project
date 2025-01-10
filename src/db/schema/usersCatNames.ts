@@ -6,7 +6,7 @@ import { users } from '@/db/schema/users';
 
 export const usersCatNames = sqliteTable('usersCatNames', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	userId: integer('user_id')
+	userId: text('user_id')
 		.references(() => users.id, { onDelete: 'cascade' })
 		.notNull(),
 	catNameId: integer('cat_name_id')

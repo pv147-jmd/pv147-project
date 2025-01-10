@@ -9,7 +9,7 @@ import { type UsersCatNames } from '@/db/schema/usersCatNames';
 import { getCatNameById } from '@/db/catNames/actions';
 
 const MyCatNames = () => {
-	
+
 	const [ownedCats, setOwnedCats] = useState<
 		(UsersCatNames & { catName: string })[]
 	>([]);
@@ -18,7 +18,7 @@ const MyCatNames = () => {
 	const router = useRouter();
 
 	useEffect(() => {
-		const fetchOwnedCats = async (userId: number) => {
+		const fetchOwnedCats = async (userId: string) => {
 			const cats = await getUsersCatNames(userId);
 			const catsWithNames = await Promise.all(
 				cats.map(async cat => {
@@ -32,10 +32,10 @@ const MyCatNames = () => {
 			setOwnedCats(catsWithNames);
 			setLoading(false);
 		};
-		if (session.user?.id) {
-			fetchOwnedCats(session.user.id);
+		if (session?.user?.id) {
+			fetchOwnedCats(session?.user.id);
 		}
-	}, [session.user?.id]);
+	}, [session?.user?.id]);
 
 	if (loading) {
 		return (
