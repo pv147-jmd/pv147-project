@@ -7,8 +7,8 @@ import { TableCatNames } from '@/components/table-cat-names';
 import { addCatName, searchCatNames } from '@/db/catNames/actions';
 import {
 	useAllCatNames,
-	CatName,
-	useTenRandomCatNames
+	type CatName,
+	useRandomCatNames
 } from '@/db/queries/catNamesQueries';
 
 const GeneratePage = () => {
@@ -21,12 +21,12 @@ const GeneratePage = () => {
 
 	const { data: allCatNames, isLoading: isLoadingAllNames } = useAllCatNames();
 
-	const userId = session?.user?.id ? session.user.id : "-1";
+	const userId = session?.user?.id ? session.user.id : '-1';
 	const {
 		data: randomCatNames,
 		isLoading: isLoadingRandomNames,
 		refetch
-	} = useTenRandomCatNames(userId);
+	} = useRandomCatNames(userId, 10);
 
 	const dataCatNames: CatName[] = showAllNames
 		? (allCatNames ?? [])
@@ -54,7 +54,7 @@ const GeneratePage = () => {
 
 	const handleSaveNewCatName = async () => {
 		if (!newCatName.trim()) return alert('Zadejte platné jméno.');
-		await addCatName(newCatName, session!.user?.id ?? "0");
+		await addCatName(newCatName, session!.user?.id ?? '0');
 		handleSearch(newCatName);
 		setNewCatName('');
 	};
@@ -99,7 +99,7 @@ const GeneratePage = () => {
 						/>
 					</div>
 
-					{(session?.user) &&
+					{session?.user &&
 						searchTerm.trim() &&
 						(catNames.length === 0 ||
 							!catNames.find(
@@ -125,7 +125,14 @@ const GeneratePage = () => {
 						<div className="h-12 w-12 animate-spin rounded-full border-t-4 border-solid border-blue-500 border-opacity-50" />
 					</div>
 				) : (
-					<TableCatNames catNames={catNames.length <= 0 && searchTerm.length == 0 ? dataCatNames : catNames} userId={session?.user?.id ?? "0"} />
+					<TableCatNames
+						catNames={
+							catNames.length <= 0 && searchTerm.length == 0
+								? dataCatNames
+								: catNames
+						}
+						userId={session?.user?.id ?? '0'}
+					/>
 				)}
 			</div>
 		</>

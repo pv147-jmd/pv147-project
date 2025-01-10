@@ -5,13 +5,10 @@ import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
 
-
 export const Navbar = () => {
-
 	const router = useRouter();
 	const { data: session, status } = useSession();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
 
 	console.log('user', session?.user);
 	console.log('user id', session?.user.id);
@@ -19,7 +16,7 @@ export const Navbar = () => {
 	const handleLogout = async () => {
 		if (session?.user) {
 			await signOut({ redirect: true });
-		} 
+		}
 		router.push('/');
 	};
 
@@ -42,13 +39,21 @@ export const Navbar = () => {
 					>
 						Generování jmen
 					</Link>
-					{(session?.user) && (
-						<Link
-							href="/my-names"
-							className="text-gray-600 transition hover:text-gray-800"
-						>
-							Moje jména
-						</Link>
+					{session?.user && (
+						<>
+							<Link
+								href="/quick-upload"
+								className="text-gray-600 transition hover:text-gray-800"
+							>
+								Přidat kočičku
+							</Link>
+							<Link
+								href="/my-names"
+								className="text-gray-600 transition hover:text-gray-800"
+							>
+								Moje jména
+							</Link>
+						</>
 					)}
 					{(session?.user) && (
 						<Link
@@ -103,7 +108,9 @@ export const Navbar = () => {
 						<>
 							<p className="text-sm font-medium text-gray-800">
 								Přihlášen:
-								{session?.user && <span className="font-semibold">{session?.user.email}</span>}
+								{session?.user && (
+									<span className="font-semibold">{session?.user.email}</span>
+								)}
 							</p>
 							<button
 								onClick={handleLogout}
@@ -128,13 +135,20 @@ export const Navbar = () => {
 							Generování jmen
 						</Link>
 						{session?.user && (
-							<Link
-								href="/my-names"
-								className="text-gray-600 transition hover:text-gray-800"
-								onClick={() => setIsMobileMenuOpen(false)}
-							>
-								Moje jména
-							</Link>
+							<>
+								<Link
+									href="/quick-upload"
+									className="text-gray-600 transition hover:text-gray-800"
+								>
+									Přidat kočičku
+								</Link>
+								<Link
+									href="/my-names"
+									className="text-gray-600 transition hover:text-gray-800"
+								>
+									Moje jména
+								</Link>
+							</>
 						)}
 						{!session?.user && (
 							<>
@@ -161,7 +175,8 @@ export const Navbar = () => {
 								onClick={handleLogout}
 								className="w-full rounded bg-red-500 px-4 py-2 text-white transition duration-200 hover:bg-red-600"
 							>
-								{session?.user && <span>{session?.user.email}</span>} - Odhlásit se
+								{session?.user && <span>{session?.user.email}</span>} - Odhlásit
+								se
 							</button>
 						</div>
 					)}
