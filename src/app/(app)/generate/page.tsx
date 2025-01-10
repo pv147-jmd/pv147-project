@@ -10,19 +10,23 @@ import {
 	CatName,
 	useTenRandomCatNames
 } from '@/db/queries/catNamesQueries';
-import { useUser } from '@/context/UserContext';
+
 const GeneratePage = () => {
 	const [showAllNames, setShowAllNames] = useState(false);
+	const [catNames, setCatNames] = useState<CatName[]>([]);
+	const [searchTerm, setSearchTerm] = useState('');
+	const [newCatName, setNewCatName] = useState('');
 
-	// const { user } = useUser();
 	const { data: session } = useSession();
 
 	const { data: allCatNames, isLoading: isLoadingAllNames } = useAllCatNames();
+
+	const userId = session?.user?.id ? session.user.id : "-1";
 	const {
 		data: randomCatNames,
 		isLoading: isLoadingRandomNames,
 		refetch
-	} = useTenRandomCatNames(user?.id ?? -1);
+	} = useTenRandomCatNames(userId);
 
 	const dataCatNames: CatName[] = showAllNames
 		? (allCatNames ?? [])
@@ -32,28 +36,25 @@ const GeneratePage = () => {
 
 	const handleRandomNames = () => {
 		setSearchTerm('');
+		setCatNames([]);
 		setShowAllNames(false);
 		refetch();
 	};
 
 	const handleAllNames = () => {
 		setSearchTerm('');
+		setCatNames([]);
 		setShowAllNames(true);
 	};
 
-	const [searchTerm, setSearchTerm] = useState('');
-	const [newCatName, setNewCatName] = useState('');
-
 	const handleSearch = async (term: string) => {
-		//setIsLoading(true);
 		const filteredNames = await searchCatNames(term);
-		//setCatNames(filteredNames);
-		//setIsLoading(false);
+		setCatNames(filteredNames);
 	};
 
 	const handleSaveNewCatName = async () => {
 		if (!newCatName.trim()) return alert('Zadejte platné jméno.');
-		await addCatName(newCatName, session?.user?.id ?? "0");
+		await addCatName(newCatName, session!.user?.id ?? "0");
 		handleSearch(newCatName);
 		setNewCatName('');
 	};
@@ -100,12 +101,11 @@ const GeneratePage = () => {
 
 					{(session?.user) &&
 						searchTerm.trim() &&
-						/*(catNames.length === 0 ||
+						(catNames.length === 0 ||
 							!catNames.find(
 								cat =>
 									cat.name.toLowerCase() === searchTerm.trim().toLowerCase()
 							)) &&
-							*/
 						!isLoading && (
 							<div className="flex gap-2">
 								<button
@@ -125,7 +125,7 @@ const GeneratePage = () => {
 						<div className="h-12 w-12 animate-spin rounded-full border-t-4 border-solid border-blue-500 border-opacity-50" />
 					</div>
 				) : (
-					<TableCatNames catNames={dataCatNames} userId={user?.id ?? 0} />
+					<TableCatNames catNames={catNames.length <= 0 && searchTerm.length == 0 ? dataCatNames : catNames} userId={session?.user?.id ?? "0"} />
 				)}
 			</div>
 		</>
