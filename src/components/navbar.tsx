@@ -5,28 +5,21 @@ import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
 
-// import { useUser } from '@/context/UserContext';
 
 export const Navbar = () => {
-	// const { user, logout } = useUser();
+
 	const router = useRouter();
 	const { data: session, status } = useSession();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-	console.log("Session Data:", session);
-	console.log("Session Status:", status);
 
-	// if (status === 'loading') {
-	// 	return <p>Loading...</p>;
-	// }
+	console.log('user', session?.user);
+	console.log('user id', session?.user.id);
 
 	const handleLogout = async () => {
 		if (session?.user) {
 			await signOut({ redirect: true });
 		} 
-		// else if (user) {
-		// 	logout();
-		// }
 		router.push('/');
 	};
 

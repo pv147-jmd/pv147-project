@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
 import { getUsersCatNames } from '@/db/queries/usersCatNamesQueries';
-import { useUser } from '@/context/UserContext';
 import { type UsersCatNames } from '@/db/schema/usersCatNames';
 import { getCatNameById } from '@/db/catNames/actions';
 
 const MyCatNames = () => {
-	const { user } = useUser();
+	
 	const [ownedCats, setOwnedCats] = useState<
 		(UsersCatNames & { catName: string })[]
 	>([]);
@@ -33,10 +32,10 @@ const MyCatNames = () => {
 			setOwnedCats(catsWithNames);
 			setLoading(false);
 		};
-		if (user?.id) {
-			fetchOwnedCats(user.id);
+		if (session.user?.id) {
+			fetchOwnedCats(session.user.id);
 		}
-	}, [user?.id]);
+	}, [session.user?.id]);
 
 	if (loading) {
 		return (
