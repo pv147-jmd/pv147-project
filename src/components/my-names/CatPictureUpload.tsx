@@ -13,6 +13,21 @@ export const CatPictureUpload = ({
 	const inputFileRef = useRef<HTMLInputElement>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
+	const [preview, setPreview] = useState<string | null>(null);
+
+	const handleFileChange = (data: React.ChangeEvent<HTMLInputElement>) => {
+		if (data.target.files) {
+			const file = data.target.files[0];
+			setPreview(URL.createObjectURL(file));
+		}
+	};
+
+	const handleButtonClick = (capture?: string) => {
+		if (inputFileRef.current) {
+			inputFileRef.current.capture = capture ?? '';
+			inputFileRef.current.click();
+		}
+	};
 
 	return (
 		<div className="mx-auto max-w-md rounded-md bg-white p-4 shadow-md">
@@ -43,22 +58,53 @@ export const CatPictureUpload = ({
 					router.replace('/my-names');
 				}}
 			>
-				<input
-					name="file"
-					ref={inputFileRef}
-					type="file"
-					accept="image/*"
-					required
-					className="block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 focus:outline-none"
-				/>
-				<button
-					type="submit"
-					className="mt-4 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-					disabled={isLoading}
-				>
-					{isLoading ? 'Nahrávání...' : 'Nahrát'}
-				</button>
-			</form>
-		</div>
-	);
+				<div>
+					<input
+						ref={inputFileRef}
+						type="file"
+						accept="image/*"
+						required
+						className="hidden"
+						onChange={handleFileChange}
+					/>
+					<div className="flex items-center justify-center gap-4">
+						<button
+							type="button"
+							onClick={() => handleButtonClick()}
+							className="flex h-28 items-center justify-center rounded-md border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none"
+						>
+							<div className="flex flex-col items-center justify-center">
+								<p className="p-2 text-center">Nahrát ze zařízení</p>
+								<LucideUpload size={24}/>
+							</div>
+						</button>
+						<button
+							type="button"
+							onClick={() => handleButtonClick('environment')}
+							className="flex h-28 w-32 items-center justify-center rounded-md border border-gray-300 bg-gray-50 text-gray-900 focus:outline-none lg:hidden"
+						>
+							<div className="flex flex-col items-center justify-center">
+								<p className="text-center">Vyfotit</p>
+								<LucideCamera size={24}/>
+							</div>
+						</button>
+					</div>
+					{preview && (
+						<div className="mt-4">
+							<Image
+								src={preview}
+								alt="Preview"
+								className="mx-auto h-48 w-48 object-cover"
+								width={192}
+								height={192}
+							/>
+						</div>
+					)}
+				</div>
+				{isLoading ? 'Nahrávání...' : 'Nahrát'}
+			</button>
+		</form>
+</div>
+)
+	;
 };
