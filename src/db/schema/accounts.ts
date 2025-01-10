@@ -3,13 +3,17 @@ import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 export const accounts = sqliteTable('accounts', {
     id: text('id').primaryKey(),
-    userId: text('userId').notNull(),
+    userId: text('userId').notNull(), 
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
-    accessToken: text('accessToken'),
-    refreshToken: text('refreshToken'),
-    expiresAt: integer('expiresAt'),
-    tokenType: text('tokenType'),
+    refresh_token: text('refresh_token'), 
+    access_token: text('access_token'), 
+    token_type: text('token_type'),
     scope: text('scope'),
-    idToken: text('idToken'),
+    id_token: text('id_token'),
+    session_state: text('session_state'),
+    expires_at: integer('expires_at'), 
+    type: text('type').notNull() 
 });
+
+export type Account = typeof accounts.$inferSelect;

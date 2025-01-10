@@ -11,12 +11,12 @@ import {
 	getRandomCatNamesWithoutUsers,
 	searchCatNames
 } from '@/db/catNames/actions';
-
+// import { useUser } from '@/context/UserContext';
 
 type CatName = {
 	id: number;
 	name: string;
-	userId: number | null;
+	userId: string | null;
 };
 
 const GeneratePage = () => {
@@ -26,6 +26,7 @@ const GeneratePage = () => {
 	const [newCatName, setNewCatName] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 
+	// const { user } = useUser();
 	const { data: session } = useSession();
 
 	useEffect(() => {
@@ -39,7 +40,7 @@ const GeneratePage = () => {
 
 	const handleRandomNames = async () => {
 		setIsLoading(true);
-		const randomNames = await getRandomCatNamesWithoutUsers(session.user?.id ?? 0);
+		const randomNames = await getRandomCatNamesWithoutUsers(session?.user?.id ?? "0");
 		const updatedNames = randomNames.map(name => ({
 			...name,
 			userId: null
@@ -69,7 +70,7 @@ const GeneratePage = () => {
 
 	const handleSaveNewCatName = async () => {
 		if (!newCatName.trim()) return alert('Zadejte platné jméno.');
-		await addCatName(newCatName, session.user?.id ?? 0);
+		await addCatName(newCatName, session?.user?.id ?? "0");
 		handleSearch(newCatName);
 		setNewCatName('');
 	};
@@ -140,7 +141,7 @@ const GeneratePage = () => {
 						<div className="h-12 w-12 animate-spin rounded-full border-t-4 border-solid border-blue-500 border-opacity-50" />
 					</div>
 				) : (
-					<TableCatNames catNames={catNames} userId={session.user?.id ?? 0} />
+					<TableCatNames catNames={catNames} userId={session?.user?.id ?? "0"} />
 				)}
 			</div>
 		</>

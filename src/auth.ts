@@ -1,4 +1,4 @@
-import type { Account, Session, User } from 'next-auth';
+import type { Account, Session, User, NextAuthOptions } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -11,8 +11,10 @@ import { users } from '@/db/schema/users';
 import { verificationTokens } from './db/schema/tokens';
 import { accounts } from './db/schema/accounts';
 import { sessions } from './db/schema/sessions';
+import { v4 as uuidv4 } from 'uuid';
+// import { MyCustomAdapter } from './adapters/customAdapter';
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -58,7 +60,7 @@ export const authOptions = {
 
 				// Return the user object
 				return {
-					id: String(user.id),
+					id: user.id,
 					email: user.email,
 					name: user.nickname
 					// image: user.image
@@ -67,21 +69,23 @@ export const authOptions = {
 		})
 	],
 	adapter: DrizzleAdapter(db, {
-		usersTable: users,
+		usersTable: users,	
 		sessionsTable: sessions,
 		accountsTable: accounts,
 		verificationTokensTable: verificationTokens
 	}),
+	// adapter: new MyCustomAdapter(db),
 	session: {
-		strategy: 'jwt', 
+		strategy: "jwt", 
 		maxAge: 30 * 24 * 60 * 60, 
 		updateAge: 24 * 60 * 60,   
 	},
-	debug: true,
+	// debug: true,
 	callbacks: {
 		session: async ({ session, token }: { session: Session; token: JWT }) => {
 			if (token.user) {
 				session.user = token.user as User;
+				// session.user.id = token.user.id;
 			}
 			return session;
 		},
@@ -115,6 +119,7 @@ export const authOptions = {
 
 				if (!existingUser) {
 					await db.insert(users).values({
+						id: uuidv4(),  // Add this line to provide the id
 						email: user?.email ?? '',
 						nickname: user?.name ?? '',
 						password: ''

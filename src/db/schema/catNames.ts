@@ -6,7 +6,7 @@ import { users } from '@/db/schema/users';
 export const catNames = sqliteTable('catNames', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
 	name: text('name').notNull(),
-	userId: integer('user_id')
+	userId: text('user_id')
 });
 
 export const catNamesRelations = relations(catNames, ({ one }) => ({

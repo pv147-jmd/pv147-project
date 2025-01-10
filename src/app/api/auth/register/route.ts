@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
@@ -18,6 +19,7 @@ export const POST = async (request: Request) => {
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		await db.insert(users).values({
+			id: uuidv4(),
 			nickname,
 			email,
 			password: hashedPassword
