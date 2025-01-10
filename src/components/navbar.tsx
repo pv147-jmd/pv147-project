@@ -50,6 +50,14 @@ export const Navbar = () => {
 							Moje jména
 						</Link>
 					)}
+					{(session?.user) && (
+						<Link
+							href="/stats"
+							className="text-gray-600 transition hover:text-gray-800"
+						>
+							Statistiky jmen
+						</Link>
+					)}
 				</nav>
 
 				{/* Mobile menu button */}
