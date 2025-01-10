@@ -20,6 +20,21 @@ export const assignCatNameToUser = async (
 	}
 };
 
+export const assignCatWithPictureNameToUser = async (
+	userId: string,
+	catNameId: number,
+	pictureUrl: string
+) => {
+	try {
+		await db.insert(usersCatNames).values({ userId, catNameId, pictureUrl });
+
+		return { success: true, message: 'Kočičí jméno přiřazeno' };
+	} catch (error) {
+		console.error('Chyba při přiřazování jména:', error);
+		throw new Error('Nepodařilo se přiřadit kočičí jméno.');
+	}
+};
+
 export const getAssignedCatNames = async (userId: string) => {
 	const userNames = await db
 		.select({ nameId: usersCatNames.catNameId })

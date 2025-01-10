@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { LucideCamera, LucideUpload } from 'lucide-react';
 
 import { addPictureToUsersCat } from '@/db/queries/usersCatNamesQueries';
 
@@ -30,8 +32,20 @@ export const CatPictureUpload = ({
 	};
 
 	return (
-		<div className="mx-auto max-w-md rounded-md bg-white p-4 shadow-md">
-			<h1 className="mb-4 text-2xl font-bold">Nahrát novou fotku</h1>
+		<div className="mx-auto max-w-md rounded-md bg-white p-4">
+			<h1 className="mb-4 text-xl font-bold">Nahrát novou fotku</h1>
+			{preview && (
+				<div className="m-4 flex-col rounded">
+					<p className="text-center">Náhled:</p>
+					<Image
+						src={preview}
+						alt="Preview"
+						className="mx-auto h-48 w-48 rounded object-cover"
+						width={100}
+						height={100}
+					/>
+				</div>
+			)}
 			<form
 				onSubmit={async event => {
 					event.preventDefault();
@@ -75,7 +89,7 @@ export const CatPictureUpload = ({
 						>
 							<div className="flex flex-col items-center justify-center">
 								<p className="p-2 text-center">Nahrát ze zařízení</p>
-								<LucideUpload size={24}/>
+								<LucideUpload size={24} />
 							</div>
 						</button>
 						<button
@@ -85,26 +99,19 @@ export const CatPictureUpload = ({
 						>
 							<div className="flex flex-col items-center justify-center">
 								<p className="text-center">Vyfotit</p>
-								<LucideCamera size={24}/>
+								<LucideCamera size={24} />
 							</div>
 						</button>
 					</div>
-					{preview && (
-						<div className="mt-4">
-							<Image
-								src={preview}
-								alt="Preview"
-								className="mx-auto h-48 w-48 object-cover"
-								width={192}
-								height={192}
-							/>
-						</div>
-					)}
 				</div>
-				{isLoading ? 'Nahrávání...' : 'Nahrát'}
-			</button>
-		</form>
-</div>
-)
-	;
+
+				<button
+					type="submit"
+					className="mt-4 w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 focus:outline-none"
+				>
+					{isLoading ? 'Ukládání...' : 'Uložit'}
+				</button>
+			</form>
+		</div>
+	);
 };
