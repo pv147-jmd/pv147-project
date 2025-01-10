@@ -5,20 +5,28 @@ import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
 
-import { useUser } from '@/context/UserContext';
+// import { useUser } from '@/context/UserContext';
 
 export const Navbar = () => {
-	const { user, logout } = useUser();
+	// const { user, logout } = useUser();
 	const router = useRouter();
-	const { data: session } = useSession();
+	const { data: session, status } = useSession();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+	console.log("Session Data:", session);
+	console.log("Session Status:", status);
+
+	// if (status === 'loading') {
+	// 	return <p>Loading...</p>;
+	// }
 
 	const handleLogout = async () => {
 		if (session?.user) {
 			await signOut({ redirect: true });
-		} else if (user) {
-			logout();
-		}
+		} 
+		// else if (user) {
+		// 	logout();
+		// }
 		router.push('/');
 	};
 
@@ -41,7 +49,7 @@ export const Navbar = () => {
 					>
 						Generování jmen
 					</Link>
-					{(user ?? session?.user) && (
+					{(session?.user) && (
 						<Link
 							href="/my-names"
 							className="text-gray-600 transition hover:text-gray-800"
@@ -74,7 +82,7 @@ export const Navbar = () => {
 
 				{/* User actions */}
 				<div className="hidden items-center gap-x-4 lg:flex">
-					{!user && !session?.user && (
+					{!session?.user && (
 						<>
 							<Link
 								href="/login"
@@ -90,11 +98,11 @@ export const Navbar = () => {
 							</Link>
 						</>
 					)}
-					{(user ?? session?.user) && (
+					{session?.user && (
 						<>
 							<p className="text-sm font-medium text-gray-800">
 								Přihlášen:
-								{user && <span className="font-semibold">{user.email}</span>}
+								{session?.user && <span className="font-semibold">{session?.user.email}</span>}
 							</p>
 							<button
 								onClick={handleLogout}
@@ -118,7 +126,7 @@ export const Navbar = () => {
 						>
 							Generování jmen
 						</Link>
-						{(user ?? session?.user) && (
+						{session?.user && (
 							<Link
 								href="/my-names"
 								className="text-gray-600 transition hover:text-gray-800"
@@ -127,7 +135,7 @@ export const Navbar = () => {
 								Moje jména
 							</Link>
 						)}
-						{!user && !session?.user && (
+						{!session?.user && (
 							<>
 								<Link
 									href="/login"
@@ -146,13 +154,13 @@ export const Navbar = () => {
 							</>
 						)}
 					</nav>
-					{(user ?? session?.user) && (
+					{session?.user && (
 						<div className="border-t border-gray-200 px-6 py-4">
 							<button
 								onClick={handleLogout}
 								className="w-full rounded bg-red-500 px-4 py-2 text-white transition duration-200 hover:bg-red-600"
 							>
-								{user && <span>{user.email}</span>} - Odhlásit se
+								{session?.user && <span>{session?.user.email}</span>} - Odhlásit se
 							</button>
 						</div>
 					)}
