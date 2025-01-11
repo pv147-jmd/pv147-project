@@ -9,7 +9,6 @@ import { type UsersCatNames } from '@/db/schema/usersCatNames';
 import { getCatNameById } from '@/db/catNames/actions';
 
 const MyCatNames = () => {
-
 	const [ownedCats, setOwnedCats] = useState<
 		(UsersCatNames & { catName: string })[]
 	>([]);

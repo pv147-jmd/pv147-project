@@ -55,7 +55,7 @@ export const Navbar = () => {
 							</Link>
 						</>
 					)}
-					{(session?.user) && (
+					{session?.user && (
 						<Link
 							href="/stats"
 							className="text-gray-600 transition hover:text-gray-800"

@@ -1,23 +1,17 @@
-import { sql, like, eq, notInArray } from 'drizzle-orm';
+import { eq, like, notInArray, sql } from 'drizzle-orm';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { db } from '@/db';
 import { assignCatWithPictureNameToUser } from '@/db/usersCatNames/actions';
 
-import { catNames } from '../schema/catNames';
+import { catNames, type CatNames } from '../schema/catNames';
 import { usersCatNames } from '../schema/usersCatNames';
 
-export type CatName = {
-	id: number;
-	name: string;
-	userId: number | null;
-};
-
-export const getAllCatNames = async (): Promise<CatName[]> =>
+export const getAllCatNames = async (): Promise<CatNames[]> =>
 	await db.query.catNames.findMany();
 
 export const useAllCatNames = () =>
-	useQuery<CatName[]>({
+	useQuery<CatNames[]>({
 		queryKey: ['allCatNames'],
 		queryFn: getAllCatNames
 	});
@@ -25,8 +19,8 @@ export const useAllCatNames = () =>
 export const getRandomCatNames = async (
 	userId: string = '-1',
 	count: number = 10
-): Promise<CatName[]> => {
-	if (userId !== -1) {
+): Promise<CatNames[]> => {
+	if (userId !== '-1') {
 		const userNames = await db
 			.select({ nameId: usersCatNames.catNameId })
 			.from(usersCatNames)
@@ -48,7 +42,7 @@ export const getRandomCatNames = async (
 };
 
 export const useRandomCatNames = (userId: string = '-1', count: number = 10) =>
-	useQuery<CatName[]>({
+	useQuery<CatNames[]>({
 		queryKey: ['tenRandomCatNames'],
 		queryFn: () => getRandomCatNames(userId, count),
 		refetchOnWindowFocus: false
@@ -56,7 +50,7 @@ export const useRandomCatNames = (userId: string = '-1', count: number = 10) =>
 
 export const searchCatNames = async (
 	searchTerm: string
-): Promise<CatName[]> => {
+): Promise<CatNames[]> => {
 	if (!searchTerm) return getAllCatNames();
 	return await db.query.catNames.findMany({
 		where: fields => like(fields.name, `${searchTerm}%`)
@@ -65,12 +59,12 @@ export const searchCatNames = async (
 await db.query.catNames.findMany();
 
 export const useSearchCatNames = (searchTerm: string) =>
-	useQuery<CatName[]>({
+	useQuery<CatNames[]>({
 		queryKey: ['searchCatNames'],
 		queryFn: () => searchCatNames(searchTerm)
 	});
 
-export const addCatName = async (name: string, userId: number) => {
+export const addCatName = async (name: string, userId: string) => {
 	const [insertedId] = await db
 		.insert(catNames)
 		.values({

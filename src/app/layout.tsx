@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const RootLayout = ({
-	children,
+	children
 }: Readonly<{
 	children: React.ReactNode;
 }>) => (
@@ -24,10 +24,10 @@ const RootLayout = ({
 		>
 			<AuthProvider>
 				{/* <UserProvider> */}
-					<Navbar />
-					<main className="container py-4">
-						<Providers>{children}</Providers>
-					</main>
+				<Navbar />
+				<main className="container py-4">
+					<Providers>{children}</Providers>
+				</main>
 				{/* </UserProvider> */}
 			</AuthProvider>
 		</body>

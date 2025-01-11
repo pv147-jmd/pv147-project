@@ -1,18 +1,18 @@
-import type { Account, Session, User, NextAuthOptions } from 'next-auth';
+import type { Account, NextAuthOptions, Session, User } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { eq } from 'drizzle-orm';
 import { compare } from 'bcrypt';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { v4 as uuidv4 } from 'uuid';
 
 import { db } from '@/db';
 import { users } from '@/db/schema/users';
+
 import { verificationTokens } from './db/schema/tokens';
 import { accounts } from './db/schema/accounts';
 import { sessions } from './db/schema/sessions';
-import { v4 as uuidv4 } from 'uuid';
-// import { MyCustomAdapter } from './adapters/customAdapter';
 
 export const authOptions: NextAuthOptions = {
 	providers: [
@@ -69,23 +69,25 @@ export const authOptions: NextAuthOptions = {
 		})
 	],
 	adapter: DrizzleAdapter(db, {
-		usersTable: users,	
+		usersTable: users,
 		sessionsTable: sessions,
 		accountsTable: accounts,
 		verificationTokensTable: verificationTokens
 	}),
 	// adapter: new MyCustomAdapter(db),
 	session: {
-		strategy: "jwt", 
-		maxAge: 30 * 24 * 60 * 60, 
-		updateAge: 24 * 60 * 60,   
+		strategy: 'jwt',
+		maxAge: 30 * 24 * 60 * 60,
+		updateAge: 24 * 60 * 60
 	},
 	// debug: true,
 	callbacks: {
 		session: async ({ session, token }: { session: Session; token: JWT }) => {
 			if (token.user) {
-				session.user = token.user as User;
-				// session.user.id = token.user.id;
+				session.user = {
+					...token.user,
+					id: (token.user as User).id
+				};
 			}
 			return session;
 		},
@@ -98,14 +100,13 @@ export const authOptions: NextAuthOptions = {
 			user?: User;
 			account?: Account | null;
 		}) => {
-
 			console.log('JWT callback:', { token, user, account });
 			if (user) {
 				if (!token.user) {
 					token.user = {
 						id: user?.id,
 						email: user?.email,
-						name: user?.name,
+						name: user?.name
 					};
 				}
 			}
@@ -119,7 +120,7 @@ export const authOptions: NextAuthOptions = {
 
 				if (!existingUser) {
 					await db.insert(users).values({
-						id: uuidv4(),  // Add this line to provide the id
+						id: uuidv4(), // Add this line to provide the id
 						email: user?.email ?? '',
 						nickname: user?.name ?? '',
 						password: ''
@@ -130,12 +131,11 @@ export const authOptions: NextAuthOptions = {
 					token.user = {
 						id: user?.id,
 						email: user?.email,
-						name: user?.name,
+						name: user?.name
 					};
 				}
-
 			}
 			return token;
-		},
+		}
 	}
 };
