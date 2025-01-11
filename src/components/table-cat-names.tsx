@@ -42,6 +42,7 @@ export const TableCatNames: React.FC<TableCatNamesProps> = ({
 		if (userId) {
 			updateAssignedCatNames();
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userId]);
 
 	const updateAssignedCatNames = async () => {

@@ -4,17 +4,21 @@ declare module 'next-auth' {
 	/**
 	 * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
 	 */
-	type Session = {
+
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+	interface Session {
 		user: {
 			id: string;
 		} & DefaultSession['user'];
-	};
+	}
 
-	type Token = {
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+	interface Token {
 		user?: User;
-	};
+	}
 
-	type User = {
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+	interface User {
 		id: string;
-	};
+	}
 }

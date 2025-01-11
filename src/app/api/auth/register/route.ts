@@ -29,17 +29,26 @@ export const POST = async (request: Request) => {
 			{ message: 'User registered successfully' },
 			{ status: 201 }
 		);
-	} catch (error: any) {
-		if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			// Check for the custom SQLite error code
+			if ('code' in error && error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+				return NextResponse.json(
+					{ message: 'Email already in use' },
+					{ status: 409 }
+				);
+			}
+
+			// Generic error response
 			return NextResponse.json(
-				{ message: 'Email already in use' },
-				{ status: 409 }
+				{ message: 'Error registering user', error: error.message },
+				{ status: 500 }
 			);
 		}
 
-		// console.error("Error registering user:", error);
+		// Fallback for unknown error types
 		return NextResponse.json(
-			{ message: 'Error registering user', error: error.message },
+			{ message: 'An unexpected error occurred' },
 			{ status: 500 }
 		);
 	}

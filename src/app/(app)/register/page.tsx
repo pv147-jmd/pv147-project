@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 const Register = () => {
 	const [formData, setFormData] = useState({
 		email: '',
@@ -18,19 +20,16 @@ const Register = () => {
 		e.preventDefault();
 		setError('');
 
-		// Check for empty fields
 		if (!formData.email || !formData.password || !formData.nickname) {
 			setError('Všechna pole jsou povinná.');
 			return;
 		}
 
-		// Password comparison
 		if (formData.password !== formData.confirmPassword) {
 			setError('Hesla se neshodují.');
 			return;
 		}
 
-		// Remove confirmPassword from payload
 		const { confirmPassword, ...payload } = formData;
 
 		try {
@@ -43,7 +42,6 @@ const Register = () => {
 			const data = await response.json();
 			// router.push('/login?registered=true');
 
-			// Sign user in with credentials after register
 			const signInResponse = await signIn('credentials', {
 				redirect: false,
 				email: formData.email,
@@ -53,12 +51,16 @@ const Register = () => {
 			if (signInResponse?.error) {
 				setError(signInResponse.error);
 			} else {
-				// Redirect to home page or dashboard
 				router.replace('/');
 			}
-		} catch (error: any) {
-			console.error('Fetch error:', error.message || error);
-			setError('Něco se pokazilo. Zkuste to prosím znovu.');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				console.error('Fetch error:', error.message);
+				setError(error.message || 'Něco se pokazilo. Zkuste to prosím znovu.');
+			} else {
+				console.error('Unexpected error:', error);
+				setError('Něco se pokazilo. Zkuste to prosím znovu.');
+			}
 		}
 	};
 
