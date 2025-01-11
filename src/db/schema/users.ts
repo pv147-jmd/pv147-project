@@ -1,4 +1,4 @@
-import { text, integer, sqliteTable } from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
 	id: text('id').primaryKey(),
@@ -7,7 +7,7 @@ export const users = sqliteTable('users', {
 	password: text('password').notNull(),
 	role: text('role').default('user'),
 	createdAt: text('created_at').default('CURRENT_TIMESTAMP'),
-	emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
+	emailVerified: integer('emailVerified', { mode: 'timestamp_ms' }),
 	image: text('image'),
 	name: text('name')
 });

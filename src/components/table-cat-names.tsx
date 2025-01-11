@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 import {
@@ -22,7 +22,6 @@ export const TableCatNames: React.FC<TableCatNamesProps> = ({
 	catNames,
 	userId
 }) => {
-
 	const { data: session } = useSession();
 	const [assignedCatNames, setAssignedCatNames] = useState<number[]>([]);
 	const [loadingCatNames, setLoadingCatNames] = useState<Set<number>>(

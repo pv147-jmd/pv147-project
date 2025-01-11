@@ -22,7 +22,7 @@ export const db = drizzle(client, {
 		sessions,
 		verificationTokens,
 		accounts,
-		
+
 		// relations
 		// usersRelations,
 		catNamesRelations,

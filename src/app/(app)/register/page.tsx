@@ -54,7 +54,7 @@ const Register = () => {
 				setError(signInResponse.error);
 			} else {
 				// Redirect to home page or dashboard
-				router.push('/');
+				router.replace('/');
 			}
 		} catch (error: any) {
 			console.error('Fetch error:', error.message || error);

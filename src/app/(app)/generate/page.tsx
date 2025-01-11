@@ -1,19 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 import { TableCatNames } from '@/components/table-cat-names';
 import { addCatName, searchCatNames } from '@/db/catNames/actions';
 import {
 	useAllCatNames,
-	type CatName,
 	useRandomCatNames
 } from '@/db/queries/catNamesQueries';
+import { type CatNames } from '@/db/schema/catNames';
 
 const GeneratePage = () => {
 	const [showAllNames, setShowAllNames] = useState(false);
-	const [catNames, setCatNames] = useState<CatName[]>([]);
+	const [catNames, setCatNames] = useState<CatNames[]>([]);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [newCatName, setNewCatName] = useState('');
 
@@ -28,7 +28,7 @@ const GeneratePage = () => {
 		refetch
 	} = useRandomCatNames(userId, 10);
 
-	const dataCatNames: CatName[] = showAllNames
+	const dataCatNames: CatNames[] = showAllNames
 		? (allCatNames ?? [])
 		: (randomCatNames ?? []);
 
@@ -127,7 +127,7 @@ const GeneratePage = () => {
 				) : (
 					<TableCatNames
 						catNames={
-							catNames.length <= 0 && searchTerm.length == 0
+							catNames.length <= 0 && searchTerm.length === 0
 								? dataCatNames
 								: catNames
 						}

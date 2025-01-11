@@ -1,6 +1,6 @@
 'use server';
 
-import { sql, like, eq, notInArray } from 'drizzle-orm';
+import { eq, like } from 'drizzle-orm';
 
 import { db } from '@/db';
 

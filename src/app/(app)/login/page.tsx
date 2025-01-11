@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 
@@ -21,7 +21,7 @@ const Login = () => {
 	};
 
 	useEffect(() => {
-		if (searchParams.get("registered") === 'true') {
+		if (searchParams.get('registered') === 'true') {
 			setSuccess(true);
 		}
 	}, [searchParams]);
@@ -38,9 +38,8 @@ const Login = () => {
 		// const { ...payload } = formData;
 
 		try {
-
 			const result = await signIn('credentials', {
-				redirect: false, 
+				redirect: false,
 				email: formData.email,
 				password: formData.password
 			});
@@ -122,8 +121,10 @@ const Login = () => {
 	);
 };
 
-export default () => (
+const Page = () => (
 	<Suspense fallback={<div>Loading...</div>}>
 		<Login />
 	</Suspense>
 );
+
+export default Page;
