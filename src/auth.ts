@@ -68,6 +68,9 @@ export const authOptions: NextAuthOptions = {
 			}
 		})
 	],
+	pages: {
+		signOut: '/'
+	},
 	adapter: DrizzleAdapter(db, {
 		usersTable: users,
 		sessionsTable: sessions,

@@ -5,17 +5,19 @@ import { useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
 
+/* eslint-disable @next/next/no-img-element */
+
 export const Navbar = () => {
 	const router = useRouter();
-	const { data: session, status } = useSession();
+	const { data: session } = useSession();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-	console.log('user', session?.user);
-	console.log('user id', session?.user.id);
+	// console.log('user', session?.user);
+	// console.log('user id', session?.user.id);
 
 	const handleLogout = async () => {
 		if (session?.user) {
-			await signOut({ redirect: true });
+			await signOut({ callbackUrl: '/' });
 		}
 		router.push('/');
 	};

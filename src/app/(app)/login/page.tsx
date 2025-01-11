@@ -49,12 +49,17 @@ const Login = () => {
 			} else {
 				router.replace('/');
 			}
-		} catch (error: any) {
-			console.error('Fetch error:', error.message || error);
-			setError(
-				error.message ||
-					'Při přihlašování došlo k chybě. Zkuste to prosím znovu.'
-			);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				// console.error('Fetch error:', error.message);
+				setError(
+					error.message ||
+						'Při přihlašování došlo k chybě. Zkuste to prosím znovu.'
+				);
+			} else {
+				console.error('Unknown error:', error);
+				setError('Při přihlašování došlo k chybě. Zkuste to prosím znovu.');
+			}
 		}
 	};
 
