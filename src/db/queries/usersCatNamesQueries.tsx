@@ -13,7 +13,10 @@ type CatNameUsage = {
 
 export const getUsersCatNames = async (userId: string) =>
 	db.query.usersCatNames.findMany({
-		where: (usersCatNames, { eq }) => eq(usersCatNames.userId, userId)
+		where: (usersCatNames, { eq }) => eq(usersCatNames.userId, userId),
+		with: {
+			catName: true
+		}
 	});
 
 export const getUsersCatNameById = async (userCatNameId: number) =>

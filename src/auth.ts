@@ -1,4 +1,9 @@
-import type { Account, NextAuthOptions, Session, User } from 'next-auth';
+import NextAuth, {
+	type Account,
+	type Session,
+	type User,
+	type NextAuthConfig
+} from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -14,7 +19,7 @@ import { verificationTokens } from './db/schema/tokens';
 import { accounts } from './db/schema/accounts';
 import { sessions } from './db/schema/sessions';
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthConfig = {
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -40,18 +45,16 @@ export const authOptions: NextAuthOptions = {
 				}
 
 				// Fetch user from the database
-				const user = await db
-					.select()
-					.from(users)
-					.where(eq(users.email, credentials.email))
-					.get();
+				const user = await db.query.users.findFirst({
+					where: (users, { eq }) => eq(users.email, credentials.email as string)
+				});
 
 				if (!user) {
 					throw new Error('No user found');
 				}
 
 				const isValidPassword = await compare(
-					credentials.password,
+					credentials.password as string,
 					user.password
 				);
 				if (!isValidPassword) {
@@ -71,6 +74,7 @@ export const authOptions: NextAuthOptions = {
 	pages: {
 		signOut: '/'
 	},
+	trustHost: true,
 	adapter: DrizzleAdapter(db, {
 		usersTable: users,
 		sessionsTable: sessions,
@@ -89,7 +93,7 @@ export const authOptions: NextAuthOptions = {
 			if (token.user) {
 				session.user = {
 					...token.user,
-					id: (token.user as User).id
+					id: (token.user as User).id as string
 				};
 			}
 			return session;
@@ -142,3 +146,5 @@ export const authOptions: NextAuthOptions = {
 		}
 	}
 };
+
+export const { auth, handlers } = NextAuth(authOptions);

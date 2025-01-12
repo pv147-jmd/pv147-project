@@ -5,7 +5,7 @@ import { users } from '@/db/schema/users';
 
 export const catNames = sqliteTable('catNames', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	name: text('name').notNull(),
+	name: text('name').notNull().unique(),
 	userId: text('user_id')
 });
 
