@@ -74,6 +74,7 @@ const authOptions: NextAuthConfig = {
 	pages: {
 		signOut: '/'
 	},
+	trustHost: true,
 	adapter: DrizzleAdapter(db, {
 		usersTable: users,
 		sessionsTable: sessions,
